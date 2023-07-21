@@ -1,0 +1,252 @@
+const gameData = [
+      {
+        id: 1,
+        name: "Game A",
+        gameType: "Singleplayer",
+        numberOfPlayers: 1,
+      },
+      {
+        id: 2,
+        name: "Game B",
+        gameType: "Multiplayer",
+        numberOfPlayers: 4,
+      },
+      {
+        id: 3,
+        name: "Game C",
+        gameType: "Singleplayer",
+        numberOfPlayers: 2,
+      },
+    ];
+
+  return (
+    <section className="my-12">
+      <div className="w-11/12 mx-auto">
+        <h2 className="text-3xl p-3">Explore</h2>
+      </div>
+      <main className="w-11/12 mx-auto grid grid-cols-1">
+        <div>
+          <div className="mt-4">
+            <h3 className="p-3 px-5 text-xl">View invitations</h3>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white">
+              <thead>
+                <tr className="border-b">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Name
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Game Type
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Participants
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {gameData.map((game) => (
+                  <tr key={game.id} className="border-b">
+                    <td className="px-6 py-4 whitespace-nowrap text-blue-500">
+                      {game.name}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {game.gameType}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {game.numberOfPlayers}
+                    </td>
+                    <td className="px-3 py-4 whitespace-nowrap">
+                      <button
+                        className="text-green-500 text-white font-bold py-2 px-3 rounded mr-2"
+                        title="Accept"
+                      >
+                        <AiOutlineCheckCircle className="text-2xl" />
+                      </button>
+                      <button
+                        className="text-red-500 text-white font-bold py-2 px-3 rounded"
+                        title="Reject"
+                      >
+                        <AiOutlineCloseCircle className="text-2xl" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </section>
+  );
+
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.7.0 <0.9.0;
+
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+
+contract PlayToEarn is Ownable, ReentrancyGuard {
+    using Counters for Counters.Counter;
+
+    Counters.Counter private _gameCounter;
+    Counters.Counter private _playerCounter;
+    Counters.Counter private _participantCounter;
+
+    struct GameStruct {
+        uint id;
+        string caption;
+        address owner;
+        uint participants;
+        uint deadline;
+        uint timestamp;
+        bool isSingleGame;
+        bool deleted;
+    }
+
+    struct PlayerStruct {
+        uint id;
+        uint gameId;
+        address player;
+    }
+
+    struct Invitation {
+        address invitedPlayer;
+        bool accepted;
+    }
+
+    // Platform related data
+    mapping(uint => GameStruct) private games;
+    mapping(uint => PlayerStruct) private players;
+    mapping(address => uint[]) private playerInvitations;
+
+    // Check for existence of platform resources
+    mapping(uint => bool) private gameExists;
+    mapping(address => bool) private playerExists;
+    mapping(uint => Invitation[]) private gameInvitations;
+    mapping(uint => bool) private gameHasPlayers;
+
+    // Modifiers
+    modifier onlyGameOwner(uint gameId) {
+        require(gameExists[gameId], "Game does not exist");
+        require(games[gameId].owner == msg.sender, "Only the owner can invite players");
+        _;
+    }
+
+    // Game functions
+    function createGame(
+        string memory caption,
+        uint participants,
+        uint deadline
+    ) public onlyOwner {
+        require(participants > 0, "Number of participants should be greater than zero");
+        require(bytes(caption).length > 0, "Caption is required!");
+        require(deadline > block.timestamp, "Deadline should be in the future");
+
+        _gameCounter.increment();
+
+        games[_gameCounter.current()] = GameStruct({
+            id: _gameCounter.current(),
+            caption: caption,
+            owner: msg.sender,
+            participants: participants,
+            deadline: deadline,
+            timestamp: block.timestamp,
+            isSingleGame: participants > 2,
+            deleted: false
+        });
+    }
+
+    function invitePlayer(uint gameId, address player) public onlyGameOwner(gameId) {
+        require(playerExists[player], "Player is not part of the game");
+        require(!gameHasPlayers[gameId], "Game has already started");
+        require(!isPlayerJoined(gameId, player), "Player is already part of the game");
+
+        Invitation[] storage invitations = gameInvitations[gameId];
+        require(invitations.length < games[gameId].participants, "Participant limit reached");
+
+        invitations.push(Invitation({
+            invitedPlayer: player,
+            accepted: false
+        }));
+        playerInvitations[player].push(gameId);
+    }
+
+    function acceptInvitation(uint gameId) public {
+        require(playerExists[msg.sender], "Player is not part of the game");
+        require(gameExists[gameId], "Game does not exist");
+        require(!isPlayerJoined(gameId, msg.sender), "Player is already part of the game");
+
+        Invitation[] storage invitations = gameInvitations[gameId];
+        for (uint256 i = 0; i < invitations.length; i++) {
+            if (invitations[i].invitedPlayer == msg.sender && !invitations[i].accepted) {
+                invitations[i].accepted = true;
+                participants[players[_playerCounter.current()].id].isAvailable = false;
+                joinGame(gameId);
+                return;
+            }
+        }
+        revert("Invitation not found");
+    }
+
+    function rejectInvitation(uint gameId) public {
+        require(playerExists[msg.sender], "Player is not part of the game");
+        require(gameExists[gameId], "Game does not exist");
+
+        Invitation[] storage invitations = gameInvitations[gameId];
+        for (uint256 i = 0; i < invitations.length; i++) {
+            if (invitations[i].invitedPlayer == msg.sender && !invitations[i].accepted) {
+                delete invitations[i];
+                return;
+            }
+        }
+        revert("Invitation not found");
+    }
+
+    function getPlayerInvitations() public view returns (uint[] memory) {
+        return playerInvitations[msg.sender];
+    }
+
+    function joinGame(uint gameId) internal {
+        gameHasPlayers[gameId] = true;
+        _playerCounter.increment();
+        players[_playerCounter.current()] = PlayerStruct({
+            id: _playerCounter.current(),
+            gameId: gameId,
+            player: msg.sender
+        });
+    }
+
+    // Volunteer functions
+    function participate() public {
+        require(!playerExists[msg.sender], "Participant already exists");
+
+        _participantCounter.increment();
+        playerExists[msg.sender] = true;
+    }
+
+    // Private functions
+    function isPlayerJoined(uint gameId, address player) private view returns (bool) {
+        Invitation[] memory invitations = gameInvitations[gameId];
+        for (uint256 i = 0; i < invitations.length; i++) {
+            if (invitations[i].invitedPlayer == player && invitations[i].accepted) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function _currentTime() internal view returns (uint256) {
+        return block.timestamp;
+    }
+
+    function _payTo(address to, uint256 amount) internal {
+        (bool success, ) = payable(to).call{value: amount}("");
+        require(success, "Payment failed");
+    }
+}

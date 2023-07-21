@@ -10,7 +10,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard{
 
     Counters.Counter private _gameCounter;
     Counters.Counter private _playerCounter;
-    Counters.Counter private _volunteerCounter;
+    Counters.Counter private _participantCounter;
 
     struct GameStruct {
         uint id;
@@ -20,8 +20,6 @@ contract PlayToEarn is Ownable, ReentrancyGuard{
         uint deadline;
         uint timestamp;
         bool isSingleGame;
-        bool start;
-        bool gameCompleted;
         bool deleted;
     }
 
@@ -33,56 +31,107 @@ contract PlayToEarn is Ownable, ReentrancyGuard{
     }
 
 
-    struct VolunteerStruct {
+    struct ParticipantStruct {
         uint id;
-        address participants;
+        address participant;
         bool isAvailable;
     }
 
     uint private totalBalance;
-    uint private MAX_PARTICIPANTS_SINGLE = 2;
-    uint private MIN_PARTICIPANTS_GROUP = 3;
-    uint256 private ONE_DAY_IN_SECONDS = 86400;
     uint serviceFee = 0.5 ether;
-    bool hasVolunteers = false;
 
     // for saving platform related data
     mapping(uint => GameStruct) game;
     mapping(uint => PlayerStruct) player;
-    mapping(uint => VolunteerStruct) volunteer;
+    mapping(uint => ParticipantStruct) participant;
 
     // check for existence of platform resources
     mapping(uint => bool) gameExists;
     mapping(uint => bool) playerExists;
-    mapping(uint => bool) ParticipantExists;
+    mapping(uint => bool) participantExists;
 
 
     mapping(uint => bool) gameHasPlayers;
 
+
+    // Game functions
+
     function createGame(
         string memory caption,
         uint participants,
-        uint duration
+        uint deadline
     ) public onlyOwner {
-        require(!hasVolunteers,"There are no available volunteers to add to game!");
+        require(!_availableParticipants(participants),"Available participants not enough");
         require(bytes(caption).length > 0, "Caption is required!");
-        require(!_availableVolunteers(participants),"Available volunteers not enough");
-        require(duration > 0, "Duration should be greater than zero!");
+        require(deadline > 0, "Duration should be greater than zero!");
 
         _gameCounter.increment();
 
-        // game[_gameCounter.current()] = GameStruct({
-        //     id:_gameCounter.current()
+        game[_gameCounter.current()] = GameStruct({
+            id:_gameCounter.current(),
+            caption: caption,
+            owner: msg.sender,
+            participants: participants,
+            deadline: deadline,
+            timestamp: _currentTime(),
+            isSingleGame: participants > 2 ? true : false,
+            deleted: false
+        });
+    }
 
-        // });
+    
+
+    function getGames() public view returns (GameStruct[] memory) {
+        uint activeGameCount = 0;
+        uint256 currentTime = _currentTime();
+
+        // Count the number of active games
+        for (uint256 i = 1; i <= _gameCounter.current(); i++) {
+            if (!game[i].deleted && game[i].deadline > currentTime) {
+                activeGameCount++;
+            }
+        }
+
+        // Create an array to store active games
+        GameStruct[] memory activeGames = new GameStruct[](activeGameCount);
+        uint activeIndex = 0;
+
+        // Populate the activeGames array with active games
+        for (uint256 i = 1; i <= _gameCounter.current(); i++) {
+            if (!game[i].deleted && game[i].deadline > currentTime) {
+                activeGames[activeIndex] = game[i];
+                activeIndex++;
+            }
+        }
+
+        return activeGames;
+    }
+
+    function getGame(uint id) public view returns(GameStruct memory) {
+        return game[id];
+    }
+
+    
+
+    // participate functions
+
+    function participate() public {
+        require(participantExists[_participantCounter.current()],"Participant already exists");
+
+        _participantCounter.increment();
+        participant[_participantCounter.current()] = ParticipantStruct({
+            id: _participantCounter.current(),
+            participant: msg.sender,
+            isAvailable: true
+        });
     }
 
     // private functions
 
-    function _availableVolunteers(uint _participants) private view returns(bool) {
+    function _availableParticipants(uint _participants) private view returns(bool) {
         uint256 availableCount = 0;
-        for (uint256 i = 1; i <= _volunteerCounter.current(); i++) {
-            if (volunteer[i].isAvailable) {
+        for (uint256 i = 1; i <= _participantCounter.current(); i++) {
+            if (participant[i].isAvailable) {
                 availableCount++;
             }
         }

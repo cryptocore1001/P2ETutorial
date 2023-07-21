@@ -2,7 +2,7 @@ import React from 'react'
 
 const Hero = () => {
   return (
-    <section className="h-[80vh]">
+    <section className="h-[89vh]">
       <main className="flex flex-col justify-center items-center h-full">
         <h2 className="text-4xl">
           Welcome to Play2<span className="text-blue-700">Earn</span>, Where Fun
