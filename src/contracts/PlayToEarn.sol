@@ -37,6 +37,11 @@ contract PlayToEarn is Ownable, ReentrancyGuard{
         bool isAvailable;
     }
 
+    struct InvitationStruct {
+        address invitedPlayer;
+        bool accepted;
+    }
+
     uint private totalBalance;
     uint serviceFee = 0.5 ether;
 
@@ -44,11 +49,14 @@ contract PlayToEarn is Ownable, ReentrancyGuard{
     mapping(uint => GameStruct) game;
     mapping(uint => PlayerStruct) player;
     mapping(uint => ParticipantStruct) participant;
+    mapping(uint => uint) gameInvitations;
+    mapping(address => mapping(uint => InvitationStruct)) invitationsOf;
 
     // check for existence of platform resources
     mapping(uint => bool) gameExists;
     mapping(uint => bool) playerExists;
     mapping(uint => bool) participantExists;
+    mapping(uint => mapping(address => bool)) invitationExists;
 
 
     mapping(uint => bool) gameHasPlayers;
@@ -126,6 +134,76 @@ contract PlayToEarn is Ownable, ReentrancyGuard{
         });
     }
 
+    // invitation functions
+    function invitePlayer(address invitedPlayer, uint gameId) public {
+        require(participantExists[_participantCounter.current()], "Participant already exists");
+        require(gameExists[gameId], "Game does not exist");
+        require(!_isInvited(gameId, invitedPlayer), "Player is already invited to this game");
+
+        // Store the invitation
+        gameInvitations[gameId]++;
+        invitationsOf[invitedPlayer][gameId] = InvitationStruct({
+            invitedPlayer: invitedPlayer,
+            accepted: false
+        });
+
+    }
+
+    function acceptInvitation(uint gameId, uint participantId) public {
+        require(gameExists[gameId], "Game does not exist");
+        require(invitationsOf[msg.sender][gameId].invitedPlayer == msg.sender, "You are not invited to this game");
+        require(!invitationsOf[msg.sender][gameId].accepted, "Invitation is already accepted");
+        require(participant[participantId].isAvailable, "Participant is not available");
+
+        _playerCounter.increment();
+        player[_playerCounter.current()] = PlayerStruct({
+            id: _playerCounter.current(),
+            gameId: gameId,
+            participantId: participantId,
+            player: msg.sender
+        });
+
+        participant[participantId].isAvailable = false;
+        participantExists[participantId] = true;
+    }
+
+
+    function rejectInvitation(uint gameId) public {
+        require(gameExists[gameId], "Game does not exist");
+        require(invitationsOf[msg.sender][gameId].invitedPlayer == msg.sender, "You are not invited to this game");
+        require(!invitationsOf[msg.sender][gameId].accepted, "Invitation is already accepted");
+
+        delete invitationsOf[msg.sender][gameId];
+
+        // Decrement the game invitations count
+        if (gameInvitations[gameId] > 0) {
+            gameInvitations[gameId]--;
+        }
+    }
+
+    function getInvitations(address user) public view returns (InvitationStruct[] memory) {
+        InvitationStruct[] memory userInvitations;
+        uint totalInvitations = 0;
+
+        for (uint i = 1; i <= _gameCounter.current(); i++) {
+            if (gameExists[i] && invitationsOf[user][i].invitedPlayer != address(0)) {
+                totalInvitations++;
+            }
+        }
+
+        userInvitations = new InvitationStruct[](totalInvitations);
+        uint currentIndex = 0;
+
+        for (uint i = 1; i <= _gameCounter.current(); i++) {
+            if (gameExists[i] && invitationsOf[user][i].invitedPlayer != address(0)) {
+                userInvitations[currentIndex] = invitationsOf[user][i];
+                currentIndex++;
+            }
+        }
+
+        return userInvitations;
+    }
+
     // private functions
 
     function _availableParticipants(uint _participants) private view returns(bool) {
@@ -136,6 +214,10 @@ contract PlayToEarn is Ownable, ReentrancyGuard{
             }
         }
         return availableCount >=  _participants;
+    }
+
+    function _isInvited(uint gameId, address _player) private view returns (bool) {
+        return invitationsOf[_player][gameId].invitedPlayer == _player && invitationsOf[_player][gameId].accepted == false;
     }
 
      function _randomNum(
