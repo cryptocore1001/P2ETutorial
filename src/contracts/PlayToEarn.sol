@@ -9,7 +9,6 @@ contract PlayToEarn is Ownable, ReentrancyGuard{
     using Counters for Counters.Counter;
 
     Counters.Counter private _gameCounter;
-    Counters.Counter private _playerCounter;
     Counters.Counter private _participantCounter;
 
     struct GameStruct {
@@ -17,10 +16,14 @@ contract PlayToEarn is Ownable, ReentrancyGuard{
         string caption;
         address owner;
         uint participants;
+        uint numberOfWinners;
+        uint stake;
         uint deadline;
         uint timestamp;
         bool isSingleGame;
+        bool started;
         bool deleted;
+        bool paidOut;
     }
 
     struct PlayerStruct {
@@ -51,43 +54,52 @@ contract PlayToEarn is Ownable, ReentrancyGuard{
     mapping(uint => ParticipantStruct) participant;
     mapping(uint => uint) gameInvitations;
     mapping(address => mapping(uint => InvitationStruct)) invitationsOf;
+    mapping(uint => uint) playerId;
 
     // check for existence of platform resources
     mapping(uint => bool) gameExists;
     mapping(uint => bool) playerExists;
     mapping(uint => bool) participantExists;
     mapping(uint => mapping(address => bool)) invitationExists;
+    mapping(uint => uint) playerScore;
 
 
     mapping(uint => bool) gameHasPlayers;
 
+    // modifier
+    modifier onlyGameOwner(uint gameId) {
+        require(gameExists[gameId], "Game does not exist!");
+        require(msg.sender == game[gameId].owner, "Only the game owner can call this function!");
+        _;
+    }
 
     // Game functions
 
     function createGame(
+        uint participantId,
         string memory caption,
         uint participants,
+        uint numberOfWinners,
         uint deadline
-    ) public onlyOwner {
+    ) public payable {
+        require(!participantExists[participantId],"You must be a participant to create a game");
+        require(msg.value > 0 ether, "stake funds is required");
+        require(participants > 1,"invalid number of players");
         require(!_availableParticipants(participants),"Available participants not enough");
         require(bytes(caption).length > 0, "Caption is required!");
         require(deadline > 0, "Duration should be greater than zero!");
+        require(numberOfWinners > 0, "Number Of winners required!");
 
         _gameCounter.increment();
+        uint gameId = _gameCounter.current();
+        playerId[gameId]++;
 
-        game[_gameCounter.current()] = GameStruct({
-            id:_gameCounter.current(),
-            caption: caption,
-            owner: msg.sender,
-            participants: participants,
-            deadline: deadline,
-            timestamp: _currentTime(),
-            isSingleGame: participants > 2 ? true : false,
-            deleted: false
-        });
-    }
+        require(_saveGame(gameId, caption, participants, numberOfWinners, deadline),"Game creation unsuccessful");
+        
+        require(_savePlayer(playerId[gameId], gameId, participantId, msg.sender), "Player creation unsuccessful");
 
-    
+        totalBalance += msg.value;
+    }  
 
     function getGames() public view returns (GameStruct[] memory) {
         uint activeGameCount = 0;
@@ -95,7 +107,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard{
 
         // Count the number of active games
         for (uint256 i = 1; i <= _gameCounter.current(); i++) {
-            if (!game[i].deleted && game[i].deadline > currentTime) {
+            if (!game[i].deleted && !game[i].paidOut && game[i].deadline > currentTime) {
                 activeGameCount++;
             }
         }
@@ -106,7 +118,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard{
 
         // Populate the activeGames array with active games
         for (uint256 i = 1; i <= _gameCounter.current(); i++) {
-            if (!game[i].deleted && game[i].deadline > currentTime) {
+            if (!game[i].deleted && !game[i].paidOut && game[i].deadline > currentTime) {
                 activeGames[activeIndex] = game[i];
                 activeIndex++;
             }
@@ -120,7 +132,6 @@ contract PlayToEarn is Ownable, ReentrancyGuard{
     }
 
     
-
     // participate functions
 
     function participate() public {
@@ -149,24 +160,23 @@ contract PlayToEarn is Ownable, ReentrancyGuard{
 
     }
 
-    function acceptInvitation(uint gameId, uint participantId) public {
+    function acceptInvitation(uint gameId, uint participantId) public payable {
         require(gameExists[gameId], "Game does not exist");
+        require(msg.value >= game[gameId].stake, "Insuffcient funds for stakes");
         require(invitationsOf[msg.sender][gameId].invitedPlayer == msg.sender, "You are not invited to this game");
         require(!invitationsOf[msg.sender][gameId].accepted, "Invitation is already accepted");
         require(participant[participantId].isAvailable, "Participant is not available");
+        
+        playerId[gameId]++;
+        
+        require(_savePlayer(playerId[gameId], gameId, participantId, msg.sender), "Player creation unsuccessful");
 
-        _playerCounter.increment();
-        player[_playerCounter.current()] = PlayerStruct({
-            id: _playerCounter.current(),
-            gameId: gameId,
-            participantId: participantId,
-            player: msg.sender
-        });
-
+        invitationsOf[msg.sender][gameId].accepted = true;
         participant[participantId].isAvailable = false;
         participantExists[participantId] = true;
-    }
 
+        totalBalance += msg.value;
+    }
 
     function rejectInvitation(uint gameId) public {
         require(gameExists[gameId], "Game does not exist");
@@ -204,7 +214,56 @@ contract PlayToEarn is Ownable, ReentrancyGuard{
         return userInvitations;
     }
 
+
+    function startGame(uint gameId) public onlyGameOwner(gameId){
+        require(game[gameId].participants == gameInvitations[gameId], "All participants must accept their invitations before starting the game");
+        require(!game[gameId].started, "The game has already started");
+
+        game[gameId].started = true;
+    }
+
     // private functions
+    function _saveGame(
+        uint id,
+        string memory caption,
+        uint participants,
+        uint numberOfWinners,
+        uint deadline
+    ) private returns (bool) {
+        game[id] = GameStruct({
+            id: id,
+            caption: caption,
+            owner: msg.sender,
+            participants: participants,
+            stake: msg.value,
+            numberOfWinners: numberOfWinners,
+            deadline: deadline,
+            timestamp: _currentTime(),
+            isSingleGame: participants == 2,
+            started: false,
+            deleted: false,
+            paidOut: false
+        });
+        gameExists[id] = true;
+        return true;
+    }
+
+
+    function _savePlayer(
+        uint id,
+        uint gameId,
+        uint participantId,
+        address _player
+    ) private returns (bool) {
+        player[id] = PlayerStruct({
+            id: id,
+            gameId: gameId,
+            participantId: participantId,
+            player: _player
+        });
+        playerExists[id] = true;
+        return true;
+    }
 
     function _availableParticipants(uint _participants) private view returns(bool) {
         uint256 availableCount = 0;
@@ -220,18 +279,6 @@ contract PlayToEarn is Ownable, ReentrancyGuard{
         return invitationsOf[_player][gameId].invitedPlayer == _player && invitationsOf[_player][gameId].accepted == false;
     }
 
-     function _randomNum(
-        uint256 _mod,
-        uint256 _seed,
-        uint256 _salt
-    ) internal view returns (uint256) {
-        uint256 num = uint256(
-            keccak256(
-                abi.encodePacked(block.timestamp, msg.sender, _seed, _salt)
-            )
-        ) % _mod;
-        return num;
-    }
 
     function _currentTime() internal view returns (uint256) {
         uint256 newNum = (block.timestamp * 1000) + 1000;
