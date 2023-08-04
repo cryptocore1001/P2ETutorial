@@ -29,7 +29,6 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
 
     struct PlayerStruct {
         uint id;
-        uint participantId;
         uint gameId;
         address player;
     }
@@ -69,7 +68,6 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
     }
 
     function createGame(
-        uint participantId,
         string memory description,
         uint participants,
         uint numberOfWinners,
@@ -89,7 +87,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         bool isCreated = _saveGame(gameId, description, participants, numberOfWinners, startDate);
         require(isCreated, "Game creation failed");
 
-        isCreated = _savePlayer(gameId, participantId);
+        isCreated = _savePlayer(gameId);
         require(isCreated, "Player creation failed");
     }  
 
@@ -127,13 +125,13 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         });
     }
 
-    function acceptInvitation(uint gameId, uint participantId) public payable {
+    function acceptInvitation(uint gameId) public payable {
         require(gameExists[gameId], "Game does not exist");
         require(msg.value >= games[gameId].stake, "Insuffcient funds for stakes");
         require(invitationsOf[msg.sender][gameId].account == msg.sender, "Unauthorized entity");
         require(!invitationsOf[msg.sender][gameId].responded, "Previouly responded");
         
-        bool isCreated = _savePlayer(gameId, participantId);
+        bool isCreated = _savePlayer(gameId);
         require(isCreated, "Player creation failed");
 
         invitationsOf[msg.sender][gameId].responded = true;
@@ -190,31 +188,6 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         }
     }
 
-    function sortScores(PlayerScoreSheetStruct[] memory playersScores) public pure returns (PlayerScoreSheetStruct[] memory) {
-        uint n = playersScores.length;
-        
-        for (uint i = 0; i < n - 1; i++) {
-            for (uint j = 0; j < n - i - 1; j++) {
-                // Check if the players played before comparing their scores
-                if (playersScores[j].played && playersScores[j + 1].played) {
-                    if (playersScores[j].score > playersScores[j + 1].score) {
-                        // Swap the elements
-                        PlayerScoreSheetStruct memory temp = playersScores[j];
-                        playersScores[j] = playersScores[j + 1];
-                        playersScores[j + 1] = temp;
-                    }
-                } else if (!playersScores[j].played && playersScores[j + 1].played) {
-                    // Sort players who didn't play below players who played
-                    // Swap the elements
-                    PlayerScoreSheetStruct memory temp = playersScores[j];
-                    playersScores[j] = playersScores[j + 1];
-                    playersScores[j + 1] = temp;
-                }
-            }
-        }
-    
-        return playersScores;
-    }
 
     function payout(uint gameId) public {
         require(gameExists[gameId], "Game does not exist");
@@ -246,6 +219,33 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         }
     }
 
+    
+    function sortScores(PlayerScoreSheetStruct[] memory playersScores) public pure returns (PlayerScoreSheetStruct[] memory) {
+        uint n = playersScores.length;
+        
+        for (uint i = 0; i < n - 1; i++) {
+            for (uint j = 0; j < n - i - 1; j++) {
+                // Check if the players played before comparing their scores
+                if (playersScores[j].played && playersScores[j + 1].played) {
+                    if (playersScores[j].score > playersScores[j + 1].score) {
+                        // Swap the elements
+                        PlayerScoreSheetStruct memory temp = playersScores[j];
+                        playersScores[j] = playersScores[j + 1];
+                        playersScores[j + 1] = temp;
+                    }
+                } else if (!playersScores[j].played && playersScores[j + 1].played) {
+                    // Sort players who didn't play below players who played
+                    // Swap the elements
+                    PlayerScoreSheetStruct memory temp = playersScores[j];
+                    playersScores[j] = playersScores[j + 1];
+                    playersScores[j + 1] = temp;
+                }
+            }
+        }
+    
+        return playersScores;
+    }
+
     function _saveGame(
         uint gameId,
         string memory description,
@@ -272,8 +272,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
 
 
     function _savePlayer(
-        uint gameId,
-        uint participantId
+        uint gameId
     ) internal returns (bool) {
         totalPlayers.increment();
         uint playerId = totalPlayers.current();
@@ -281,7 +280,6 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         players[playerId] = PlayerStruct({
             id: playerId,
             gameId: gameId,
-            participantId: participantId,
             player: msg.sender
         });
 
