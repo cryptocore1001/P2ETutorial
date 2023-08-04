@@ -31,6 +31,8 @@ contract PlayToEarn is Ownable, ReentrancyGuard{
         uint participantId;
         uint gameId;
         address player;
+        uint score;
+        uint finishingTime;
     }
 
 
@@ -62,9 +64,6 @@ contract PlayToEarn is Ownable, ReentrancyGuard{
     mapping(uint => bool) participantExists;
     mapping(uint => mapping(address => bool)) invitationExists;
     mapping(uint => uint) playerScore;
-
-
-    mapping(uint => bool) gameHasPlayers;
 
     // modifier
     modifier onlyGameOwner(uint gameId) {
@@ -162,6 +161,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard{
 
     function acceptInvitation(uint gameId, uint participantId) public payable {
         require(gameExists[gameId], "Game does not exist");
+        require(!game[gameId].started, "The game has already started");
         require(msg.value >= game[gameId].stake, "Insuffcient funds for stakes");
         require(invitationsOf[msg.sender][gameId].invitedPlayer == msg.sender, "You are not invited to this game");
         require(!invitationsOf[msg.sender][gameId].accepted, "Invitation is already accepted");
@@ -180,6 +180,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard{
 
     function rejectInvitation(uint gameId) public {
         require(gameExists[gameId], "Game does not exist");
+        require(!game[gameId].started, "The game has already started");
         require(invitationsOf[msg.sender][gameId].invitedPlayer == msg.sender, "You are not invited to this game");
         require(!invitationsOf[msg.sender][gameId].accepted, "Invitation is already accepted");
 
@@ -222,6 +223,21 @@ contract PlayToEarn is Ownable, ReentrancyGuard{
         game[gameId].started = true;
     }
 
+    function gamePlayUpdate(
+        uint id, 
+        uint gameId, 
+        uint score, 
+        uint finishingTime
+    ) public {
+        require(gameExists[gameId],"game does not exist");
+        require(playerExists[id],"player does not exist");
+
+        player[id].score = score;
+        player[id].finishingTime = finishingTime;
+    }
+
+    
+
     // private functions
     function _saveGame(
         uint id,
@@ -259,7 +275,9 @@ contract PlayToEarn is Ownable, ReentrancyGuard{
             id: id,
             gameId: gameId,
             participantId: participantId,
-            player: _player
+            player: _player,
+            score: 0,
+            finishingTime: 0
         });
         playerExists[id] = true;
         return true;
