@@ -32,8 +32,6 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         uint participantId;
         uint gameId;
         address player;
-        uint score;
-        uint finishingTime;
     }
 
     struct InvitationStruct {
