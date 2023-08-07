@@ -162,7 +162,6 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         }
     }
 
-
     function recordScore(uint gameId, uint score) public {
         require(games[gameId].numberOfWinners + 1 == games[gameId].acceptees, "Not enough players yet");
         require(!scores[gameId][msg.sender].played, "Player already recorded");
@@ -217,6 +216,10 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         for (uint i = 0; i < games[gameId].numberOfWinners; i++) {
             _payTo(Scores[i].player, profit / games[gameId].numberOfWinners);
         }
+    }
+
+    function isPlayerListed(uint gameId, address player) public view returns (bool) {
+        return isListed[gameId][player];
     }
 
     
