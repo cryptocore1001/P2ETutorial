@@ -8,8 +8,8 @@ describe('Contracts', () => {
   const desc = "showcase your speed in a game",
     participants = 4,
     numberOfWinners = 1,
-    startDate = 1691251065714,
-    endDate = 1691337465714;
+    startDate = 1691451065714,
+    endDate = 1691537465714;
 
   beforeEach(async () => {
     const Contract = await ethers.getContractFactory('PlayToEarn')
@@ -42,9 +42,20 @@ describe('Contracts', () => {
        expect(result).to.have.lengthOf(0)
 
        await contract.invitePlayer(user1.address,1)
+       await contract.invitePlayer(user2.address,1)
 
        result = await contract.connect(user1).getInvitations();
        expect(result).to.have.lengthOf(1);
+
+       await contract.connect(user1).acceptInvitation(1,{
+         value: toWei(0.05)
+       })
+       result = await contract.isPlayerListed(1,user1.address)
+       expect(result).to.be.true
+
+       await contract.connect(user2).rejectInvitation(1)
+       result = await contract.isPlayerListed(1, user2.address);
+       expect(result).to.be.false
     });
 
   })
