@@ -58,7 +58,6 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
     mapping(uint => mapping(address => bool)) invitationExists;
     mapping(uint => mapping(address => PlayerScoreSheetStruct)) scores;
 
-
     mapping(uint => bool) gameHasPlayers;
 
     modifier onlyGameOwner(uint gameId) {
