@@ -69,24 +69,112 @@ const connectWallet = async () => {
   }
 }
 
-const structuredMint = (mintData) =>
-  mintData
-    .map((mint) => ({
-      id: mint.id.toNumber(),
-      owner: mint.owner,
-      mintCost: fromWei(mint.mintCost),
-      timestamp: mint.timestamp.toNumber(),
-      traits: {
-        name: mint.traits.name,
-        description: mint.traits.description,
-        weapon: mint.traits.weapon,
-        image: mint.traits.image,
-        environment: mint.traits.environment,
-        rarity: mint.traits.rarity.toNumber(),
-        breeded: mint.traits.breeded,
-      },
-    }))
-    .sort((a, b) => b.timestamp - a.timestamp)
+const createGame = async ({
+  description,
+  participants,
+  numOfWinners,
+  startDate,
+  endDate,
+  stakes,
+}) => {
+  try {
+    if (!ethereum) return alert("Please install Metamask");
+    const contract = await getEthereumContract();
+    tx = await contract.createGame(description,participants,numOfWinners,startDate,endDate, {
+      value: toWei(stakes),
+    });
+    await tx.wait()
+  } catch (error) {
+    reportError(error);
+  }
+};
+
+const invitePlayer = async (player, gameId) => {
+  try {
+    if (!ethereum) return alert("Please install Metamask")
+    const contract = await getEthereumContract()
+    tx = await contract.invitePlayer(player, gameId)
+    await tx.wait()
+  } catch (err) {
+    reportError(err)
+  }
+}
+
+const acceptInvitation = async (gameId, stake) => {
+  try {
+    if (!ethereum) return alert("Please install Metamask")
+    const contract = await getEthereumContract()
+    tx = await contract.acceptInvitation(gameId, {
+      value: toWei(stake)
+    })
+    await tx.wait()
+  } catch (err) {
+    reportError(err)
+  }
+}
+
+const rejectInvitation = async (gameId) => {
+  try {
+    if (!ethereum) return alert("Please install Metamask");
+    const contract = await getEthereumContract();
+    tx = await contract.rejectInvitation(gameId);
+    await tx.wait();
+  } catch (err) {
+    reportError(err);
+  }
+};
+
+const getGames = async () => {
+  try {
+    if (!ethereum) return alert("Please install Metamask");
+    const contract = await getEthereumContract();
+    const games = await contract.getGames();
+    setGlobalState("games", structuredGames(games));
+  } catch (err) {
+    reportError(err);
+  }
+};
+
+const getGame = async (id) => {
+  try {
+    if (!ethereum) return alert("Please install Metamask");
+    const contract = await getEthereumContract()
+    const game = await contract.getGame();
+    setGlobalState("game", structuredGames([game])[0]);
+  } catch (err) {
+    reportError(err);
+  }
+};
+
+const getInvitations = async () => {
+  if (!ethereum) return alert("Please install Metamask");
+  const contract = await getEthereumContract()
+  const invitations = await contract.getInvitations()
+  setGlobalState('invitations', structuredInvitations(invitations))
+}
+
+const structuredGames = (games) =>
+  games.map((game) => ({
+    id: game.id.toNumber(),
+    string: game.description,
+    owner: game.owner.toLowerCase(),
+    participants: game.participants.toNumber(),
+    numberOfWinners: game.numberOfWinners.toNumber(),
+    plays: game.plays.toNumber(),
+    acceptees: game.acceptees.toNumber(),
+    stake: fromWei(game.stake),
+    startDate: game.startDate.toNumber(),
+    endDate: game.endDate.toNumber(),
+    timestamp: game.timestamp.toNumber(),
+    deleted: game.deleted,
+    paidOut: game.paidOut,
+  }));
+
+ const structuredInvitations = (invitations) => 
+  invitations.map((invitation) => ({
+    account: invitation.account.toLowerCase(),
+    responded: invitation.responded
+  })) 
 
 export {
   connectWallet,

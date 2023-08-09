@@ -2,20 +2,9 @@ import { createGlobalState } from 'react-hooks-global-state'
 
 const { setGlobalState, useGlobalState, getGlobalState } = createGlobalState({
   connectedAccount: '',
-  nfts: [],
-  minted: [],
-  breeded: [],
-  collection: [],
-  breeds: [],
-<<<<<<< HEAD
-  nft: null,
-  trait: null,
-  deployer: null,
-=======
-  parents: [],
-  nft: null,
-  mintCost: 0,
->>>>>>> 16e4e509662323b77c06016b035904dd798f29b2
+  games: [],
+  game: null,
+  invitations: [],
 })
 
 const truncate = (text, startChars, endChars, maxLength) => {
@@ -30,24 +19,10 @@ const truncate = (text, startChars, endChars, maxLength) => {
   return text
 }
 
-const addToLab = (nft) => {
-  const breeds = getGlobalState('breeds')
-  if (breeds.length == 2) return
-  setGlobalState('breeds', [nft, ...breeds])
-}
-
-const remFromLab = (nft) => {
-  const breeds = getGlobalState('breeds')
-  const index = breeds.findIndex((breed) => breed.tokenId == nft.tokenId)
-  breeds.splice(index, 1)
-  setGlobalState('breeds', [...breeds])
-}
 
 export {
   setGlobalState,
   useGlobalState,
   getGlobalState,
-  addToLab,
-  remFromLab,
   truncate,
 }

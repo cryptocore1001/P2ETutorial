@@ -2,14 +2,9 @@ const { ethers } = require('hardhat')
 const fs = require('fs')
 
 async function main() {
-  const contract_name = 'DappBreed'
-  const name = 'Dapp Breeds'
-  const symbol = 'DAB'
-  const baseURI =
-    'https://ipfs.io/ipfs/QmTWbe9wDns7aqZQNCuWh5PqybGbBF91kngC5Zf8qmCoyg/'
-  const maxSupply = 99
+  const contract_name = 'PlayToEarn'
   const Contract = await ethers.getContractFactory(contract_name)
-  const contract = await Contract.deploy(name, symbol, baseURI, maxSupply);
+  const contract = await Contract.deploy();
 
   await contract.deployed()
 

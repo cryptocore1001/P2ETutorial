@@ -113,7 +113,6 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         return games[id];
     }
 
-
     function invitePlayer(address playerAccount, uint gameId) public {
         require(gameExists[gameId], "Game does not exist");
         require(!isListed[gameId][playerAccount], "Player is already in this game");
