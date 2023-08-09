@@ -1,109 +1,182 @@
-import abi from "../artifacts/contracts/DappBreed.sol/DappBreed.json";
-import address from "../artifacts/contractAddress.json";
-import { ethers } from "ethers";
+import { getGlobalState, setGlobalState } from '../store'
+import abi from '../abis/src/contracts/DappBreed.sol/DappBreed.json'
+import address from '../abis/contractAddress.json'
+import { ethers } from 'ethers'
 
-const contractAddress = address.address;
-const contractAbi = abi.abi;
-let tx;
-const toWei = (num) => ethers.utils.parseEther(num.toString());
+const { ethereum } = window
+const ContractAddress = address.address
+const ContractAbi = abi.abi
+let tx
 
-if (typeof window !== "undefined") {
-  ethereum = window.ethereum;
-}
+const toWei = (num) => ethers.utils.parseEther(num.toString())
+const fromWei = (num) => ethers.utils.formatEther(num)
 
 const getEthereumContract = async () => {
-  const provider = new ethers.providers.Web3Provider(ethereum);
-  const signer = provider.getSigner();
-  const contract = new ethers.Contract(contractAddress, contractAbi, signer);
+  const accounts = await ethereum.request({ method: 'eth_accounts' })
+  const provider = accounts[0]
+    ? new ethers.providers.Web3Provider(ethereum)
+    : new ethers.providers.JsonRpcProvider(process.env.REACT_APP_RPC_URL)
+  const wallet = accounts[0] ? null : ethers.Wallet.createRandom()
+  const signer = provider.getSigner(accounts[0] ? undefined : wallet.address)
 
-  return contract;
-};
-
-const ssrEthereumContract = async () => {
-  const provider = new ethers.providers.JsonRpcProvider(
-    "http://localhost:8545"
-  );
-  const wallet = ethers.Wallet.createRandom();
-  const signer = provider.getSigner(wallet.address);
-  const contract = new ethers.Contract(contractAddress, contractAbi, signer);
-  return contract;
-};
-
-const mintNft = async (mintCost)=> {
-    try {
-
-        if(!ethereum) return alert('please install metamask')
-        const contract = await getEthereumContract()
-
-        tx = await contract.mintNft({
-          value: toWei(mintCost)
-        })
-
-        await tx.wait()
-
-    } catch (err) {
-       reportError(err)
-    }
+  const contract = new ethers.Contract(ContractAddress, ContractAbi, signer)
+  return contract
 }
 
-const breedNft = async ({ fatherId, motherId, mintCost })=> {
-    try {
-
-      if (!ethereum) return alert("please install metamask");
-      const contract = await getEthereumContract();
-
-      tx = await contract.breedNft(fatherId, motherId, {
-          value: toWei(mintCost)
-      })
-
-    } catch (err) {
-       reportError(err)
-    }
-}
-
-
-const setBaseUri = async (newBaseUri) => {
+const isWalletConnected = async () => {
   try {
-    if (!ethereum) return alert("please install metamask");
+    if (!ethereum) {
+      reportError('Please install Metamask')
+      return Promise.reject(new Error('Metamask not installed'))
+    }
+    const accounts = await ethereum.request({ method: 'eth_accounts' })
+
+    if (accounts.length) {
+      setGlobalState('connectedAccount', accounts[0])
+    } else {
+      reportError('Please connect wallet.')
+      console.log('No accounts found.')
+    }
+
+    window.ethereum.on('chainChanged', (chainId) => {
+      window.location.reload()
+    })
+
+    window.ethereum.on('accountsChanged', async () => {
+      setGlobalState('connectedAccount', accounts[0])
+      await getMyNfts()
+      await isWalletConnected()
+    })
+
+    if (accounts.length) {
+      setGlobalState('connectedAccount', accounts[0])
+    } else {
+      setGlobalState('connectedAccount', '')
+      console.log('No accounts found')
+    }
+  } catch (error) {
+    reportError(error)
+  }
+}
+
+const connectWallet = async () => {
+  try {
+    if (!ethereum) return alert('Please install Metamask')
+    const accounts = await ethereum.request({ method: 'eth_requestAccounts' })
+    setGlobalState('connectedAccount', accounts[0])
+  } catch (error) {
+    reportError(error)
+  }
+}
+
+const createGame = async ({
+  description,
+  participants,
+  numOfWinners,
+  startDate,
+  endDate,
+  stakes,
+}) => {
+  try {
+    if (!ethereum) return alert("Please install Metamask");
     const contract = await getEthereumContract();
+    tx = await contract.createGame(description,participants,numOfWinners,startDate,endDate, {
+      value: toWei(stakes),
+    });
+    await tx.wait()
+  } catch (error) {
+    reportError(error);
+  }
+};
 
-    tx = await contract.setBaseURI(newBaseUri);
+const invitePlayer = async (player, gameId) => {
+  try {
+    if (!ethereum) return alert("Please install Metamask")
+    const contract = await getEthereumContract()
+    tx = await contract.invitePlayer(player, gameId)
+    await tx.wait()
+  } catch (err) {
+    reportError(err)
+  }
+}
 
-    tx.wait();
+const acceptInvitation = async (gameId, stake) => {
+  try {
+    if (!ethereum) return alert("Please install Metamask")
+    const contract = await getEthereumContract()
+    tx = await contract.acceptInvitation(gameId, {
+      value: toWei(stake)
+    })
+    await tx.wait()
+  } catch (err) {
+    reportError(err)
+  }
+}
+
+const rejectInvitation = async (gameId) => {
+  try {
+    if (!ethereum) return alert("Please install Metamask");
+    const contract = await getEthereumContract();
+    tx = await contract.rejectInvitation(gameId);
+    await tx.wait();
   } catch (err) {
     reportError(err);
   }
 };
 
-const getMintedNfts = async ()=> {
+const getGames = async () => {
   try {
-    if (!ethereum) return console.log("please install metamask");
-    const contract = await ssrEthereumContract();
-
-    const nfts = await contract.getMintedNfts()
+    if (!ethereum) return alert("Please install Metamask");
+    const contract = await getEthereumContract();
+    const games = await contract.getGames();
+    setGlobalState("games", structuredGames(games));
   } catch (err) {
-    reportError(err)
+    reportError(err);
   }
+};
+
+const getGame = async (id) => {
+  try {
+    if (!ethereum) return alert("Please install Metamask");
+    const contract = await getEthereumContract()
+    const game = await contract.getGame();
+    setGlobalState("game", structuredGames([game])[0]);
+  } catch (err) {
+    reportError(err);
+  }
+};
+
+const getInvitations = async () => {
+  if (!ethereum) return alert("Please install Metamask");
+  const contract = await getEthereumContract()
+  const invitations = await contract.getInvitations()
+  setGlobalState('invitations', structuredInvitations(invitations))
 }
 
-const getMintedNft = async (tokenId)=> {
-  try {
-    if (!ethereum) return console.log("please install metamask");
-    const contract = await ssrEthereumContract();
+const structuredGames = (games) =>
+  games.map((game) => ({
+    id: game.id.toNumber(),
+    string: game.description,
+    owner: game.owner.toLowerCase(),
+    participants: game.participants.toNumber(),
+    numberOfWinners: game.numberOfWinners.toNumber(),
+    plays: game.plays.toNumber(),
+    acceptees: game.acceptees.toNumber(),
+    stake: fromWei(game.stake),
+    startDate: game.startDate.toNumber(),
+    endDate: game.endDate.toNumber(),
+    timestamp: game.timestamp.toNumber(),
+    deleted: game.deleted,
+    paidOut: game.paidOut,
+  }));
 
-    const nft = await contract.getMintedNft(tokenId);
-  } catch (err) {
-    reportError(err)
-  }
+ const structuredInvitations = (invitations) => 
+  invitations.map((invitation) => ({
+    account: invitation.account.toLowerCase(),
+    responded: invitation.responded
+  })) 
+
+export {
+  connectWallet,
+  isWalletConnected,
 }
-
-const getTrait =  async (tokenId)=> {
-   try {
-     if (!ethereum) return console.log("please install metamask");
-     const contract = await ssrEthereumContract();
-
-     const trait = await contract.getMintedNft(tokenId);
-   } catch (err) {
-     reportError(err)
-   }
-} 

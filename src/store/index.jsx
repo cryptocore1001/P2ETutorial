@@ -3,6 +3,9 @@ import { createGlobalState } from 'react-hooks-global-state'
 const { setGlobalState, useGlobalState, getGlobalState } = createGlobalState({
   connectedAccount: '',
   createModal: 'scale-0',
+  games: [],
+  game: null,
+  invitations: [],
 })
 
 const truncate = (text, startChars, endChars, maxLength) => {
