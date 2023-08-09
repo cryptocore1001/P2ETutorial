@@ -1,14 +1,7 @@
 import React from 'react'
-import { Header, Hero } from '../components'
-import CreateGame from '../components/CreateGame'
+import { Header, Hero, CreateGame } from '../components'
 
 const Home = () => {
-  const recaptcha = useRef(null)
-
-  function onChange(value) {
-    console.log("Captcha value:", value);
-  }
-
   return (
     <div>
       <Header />
