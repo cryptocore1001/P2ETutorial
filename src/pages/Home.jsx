@@ -1,6 +1,6 @@
-import {useRef} from 'react'
-import { GameXplorer, Header, Hero } from '../components'
-import ReCAPTCHA from "react-google-recaptcha";
+import React from 'react'
+import { Header, Hero } from '../components'
+import CreateGame from '../components/CreateGame'
 
 const Home = () => {
   const recaptcha = useRef(null)
@@ -13,16 +13,9 @@ const Home = () => {
     <div>
       <Header />
       <Hero />
-      <GameXplorer />
-      <div>
-        <ReCAPTCHA
-          ref={recaptcha}
-          sitekey="6Lci3IwnAAAAAPajgxaoCfikFgyUgA3SUsecjoMc"
-          onChange={onChange}
-        />
-      </div>
+      <CreateGame />
     </div>
-  );
+  )
 }
 
 export default Home
