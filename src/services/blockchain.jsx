@@ -77,51 +77,71 @@ const createGame = async ({
   endDate,
   stakes,
 }) => {
-  try {
-    if (!ethereum) return alert("Please install Metamask");
-    const contract = await getEthereumContract();
-    tx = await contract.createGame(description,participants,numOfWinners,startDate,endDate, {
-      value: toWei(stakes),
-    });
-    await tx.wait()
-  } catch (error) {
-    reportError(error);
-  }
+  if (!ethereum) return alert("Please install Metamask");
+
+  return new Promise(async (resolve, reject) => {
+    try {
+      const contract = await getEthereumContract();
+      tx = await contract.createGame(description,participants,numOfWinners,startDate,endDate, {
+        value: toWei(stakes),
+      });
+      await tx.wait()
+      await getGames()
+      resolve(tx)
+    } catch (error) {
+      reportError(error);
+      reject(error)
+    }
+  })
 };
 
 const invitePlayer = async (player, gameId) => {
-  try {
-    if (!ethereum) return alert("Please install Metamask")
-    const contract = await getEthereumContract()
-    tx = await contract.invitePlayer(player, gameId)
-    await tx.wait()
-  } catch (err) {
-    reportError(err)
-  }
+  if (!ethereum) return alert("Please install Metamask")
+  return new Promise(async (resolve, reject) => {
+    try {
+      const contract = await getEthereumContract()
+      tx = await contract.invitePlayer(player, gameId)
+      await tx.wait()
+      resolve(tx)
+    } catch (err) {
+      reportError(err)
+      reject(err)
+    }
+  })
 }
 
 const acceptInvitation = async (gameId, stake) => {
-  try {
-    if (!ethereum) return alert("Please install Metamask")
-    const contract = await getEthereumContract()
-    tx = await contract.acceptInvitation(gameId, {
-      value: toWei(stake)
-    })
-    await tx.wait()
-  } catch (err) {
-    reportError(err)
-  }
+  if (!ethereum) return alert("Please install Metamask")
+
+  return new Promise(async (resolve, reject) => {
+    try {
+      const contract = await getEthereumContract()
+      tx = await contract.acceptInvitation(gameId, {
+        value: toWei(stake)
+      })
+      await tx.wait()
+      resolve(tx)
+    } catch (err) {
+      reportError(err)
+      reject(err)
+    }
+  })
 }
 
 const rejectInvitation = async (gameId) => {
-  try {
-    if (!ethereum) return alert("Please install Metamask");
-    const contract = await getEthereumContract();
-    tx = await contract.rejectInvitation(gameId);
-    await tx.wait();
-  } catch (err) {
-    reportError(err);
-  }
+  if (!ethereum) return alert("Please install Metamask");
+
+  return new Promise(async (resolve, reject) => {
+    try {
+      const contract = await getEthereumContract();
+      tx = await contract.rejectInvitation(gameId);
+      await tx.wait();
+      resolve(tx)
+    } catch (err) {
+      reportError(err)
+      reject(err)
+    }
+  })
 };
 
 const getGames = async () => {
