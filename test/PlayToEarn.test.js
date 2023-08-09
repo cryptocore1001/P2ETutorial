@@ -6,6 +6,7 @@ describe('Contracts', () => {
   let contract, result
 
   const desc = "showcase your speed in a game",
+    title = 'Game title',
     participants = 4,
     numberOfWinners = 1,
     startDate = 1691451065714,
@@ -20,7 +21,7 @@ describe('Contracts', () => {
   })
 
   beforeEach(async () => {
-    await contract.createGame(desc, participants, numberOfWinners, startDate, endDate,{
+    await contract.createGame(title, desc, participants, numberOfWinners, startDate, endDate,{
       value: toWei(0.05)
     });
   })

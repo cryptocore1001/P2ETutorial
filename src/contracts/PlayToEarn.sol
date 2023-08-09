@@ -13,6 +13,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
 
     struct GameStruct {
         uint id;
+        string title;
         string description;
         address owner;
         uint participants;
@@ -68,6 +69,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
     }
 
     function createGame(
+        string memory title,
         string memory description,
         uint participants,
         uint numberOfWinners,
@@ -76,6 +78,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
     ) public payable {
         require(msg.value > 0 ether, "Stake funds is required");
         require(participants > 1, "Partiticpants must be greater than one");
+        require(bytes(title).length > 0, "Title is required!");
         require(bytes(description).length > 0, "Description is required!");
         require(startDate > 0, "Start date must be greater than zero");
         require(endDate > startDate, "End date must be greater than start date");
@@ -84,7 +87,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         totalGame.increment();
         uint gameId = totalGame.current();
 
-        bool isCreated = _saveGame(gameId, description, participants, numberOfWinners, startDate);
+        bool isCreated = _saveGame(gameId, title, description, participants, numberOfWinners, startDate);
         require(isCreated, "Game creation failed");
 
         isCreated = _savePlayer(gameId);
@@ -251,6 +254,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
 
     function _saveGame(
         uint gameId,
+        string memory title,
         string memory description,
         uint participants,
         uint numberOfWinners,
@@ -259,6 +263,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
 
         GameStruct memory gameData;
         gameData.id = gameId;
+        gameData.title =  title;
         gameData.description =  description;
         gameData.owner =  msg.sender;
         gameData.participants =  participants;
