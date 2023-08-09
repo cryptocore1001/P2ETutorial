@@ -58,7 +58,6 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
     mapping(uint => mapping(address => bool)) invitationExists;
     mapping(uint => mapping(address => PlayerScoreSheetStruct)) scores;
 
-
     mapping(uint => bool) gameHasPlayers;
 
     modifier onlyGameOwner(uint gameId) {
@@ -113,7 +112,6 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
     function getGame(uint id) public view returns(GameStruct memory) {
         return games[id];
     }
-
 
     function invitePlayer(address playerAccount, uint gameId) public {
         require(gameExists[gameId], "Game does not exist");
