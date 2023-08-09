@@ -246,4 +246,14 @@ const structuredPlayersScore = (playersScore) =>
 export {
   connectWallet,
   isWalletConnected,
-}
+  createGame,
+  invitePlayer,
+  acceptInvitation,
+  rejectInvitation,
+  recordScore,
+  payout,
+  getGames,
+  getGame,
+  getInvitations,
+  getScores,
+};

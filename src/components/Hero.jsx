@@ -1,4 +1,5 @@
 import React from 'react'
+import { setGlobalState } from '../store';
 
 const Hero = () => {
   return (
@@ -12,7 +13,7 @@ const Hero = () => {
           Get Ready to Unleash Your Inner Hero and Make Gaming Pay!
         </p>
         <div className="flex space-x-3 my-3">
-          <button className="bg-blue-700 border-[1px] text-white py-3 px-5 duration-200 transition-all  hover:bg-blue-600">
+          <button onClick={() => setGlobalState('createModal', 'scale-100')} className="bg-blue-700 border-[1px] text-white py-3 px-5 duration-200 transition-all  hover:bg-blue-600">
             Create Game
           </button>
           <button className="border-[1px] border-blue-700 text-blue-700 py-3 px-5 duration-200 transition-all hover:bg-blue-700 hover:text-white">
