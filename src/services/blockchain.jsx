@@ -144,6 +144,38 @@ const rejectInvitation = async (gameId) => {
   })
 };
 
+const recordScore = async (gameId, score) => {
+  if (!ethereum) return alert("Please install Metamask");
+
+  return new Promise(async (resolve, reject) => {
+    try {
+      const contract = await getEthereumContract();
+      tx = await contract.recordScore(gameId, score);
+      await tx.wait();
+      resolve(tx);
+    } catch (err) {
+      reportError(err);
+      reject(err);
+    }
+  });
+}
+
+const payout = async (gameId) => {
+  if(!ethereum) return alert('Please install metamask')
+
+   return new Promise(async (resolve, reject) => {
+    try {
+      const contract = await getEthereumContract()
+      tx = await contract.payout(gameId)
+      await tx.wait()
+      resolve(tx)
+    } catch (err) {
+      reportError(err)
+      reject(err)
+    }
+   })
+}
+
 const getGames = async () => {
   try {
     if (!ethereum) return alert("Please install Metamask");
@@ -173,6 +205,13 @@ const getInvitations = async () => {
   setGlobalState('invitations', structuredInvitations(invitations))
 }
 
+const getScores = async (gameId) => {
+  if (!ethereum) return alert("Please install Metamask")
+  const contract = await getEthereumContract()
+  const scores = await contract.getScores(gameId);
+  setGlobalState("scores", structuredPlayersScore(scores));
+}
+
 const structuredGames = (games) =>
   games.map((game) => ({
     id: game.id.toNumber(),
@@ -190,11 +229,19 @@ const structuredGames = (games) =>
     paidOut: game.paidOut,
   }));
 
+const structuredPlayersScore = (playersScore) => 
+    playersScore.map((playerScore) => ({
+      gameId: playerScore.id.toNumber(),
+      player: playerScore.player.toLowerCase(),
+      score: playerScore.score.toNumber(),
+      bool: playerScore.played
+    }))
+
  const structuredInvitations = (invitations) => 
-  invitations.map((invitation) => ({
-    account: invitation.account.toLowerCase(),
-    responded: invitation.responded
-  })) 
+    invitations.map((invitation) => ({
+      account: invitation.account.toLowerCase(),
+      responded: invitation.responded
+    })) 
 
 export {
   connectWallet,

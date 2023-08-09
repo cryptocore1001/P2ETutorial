@@ -5,6 +5,7 @@ const { setGlobalState, useGlobalState, getGlobalState } = createGlobalState({
   games: [],
   game: null,
   invitations: [],
+  scores: [],
 })
 
 const truncate = (text, startChars, endChars, maxLength) => {
