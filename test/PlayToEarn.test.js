@@ -9,6 +9,7 @@ describe('Contracts', () => {
     title = 'Game title',
     participants = 4,
     numberOfWinners = 1,
+    challenges = 5,
     startDate = Math.floor(Date.now()),
     endDate = Math.floor(Date.now()) + (60 * 60 * 24 * 10);
 
@@ -21,7 +22,7 @@ describe('Contracts', () => {
   })
 
   beforeEach(async () => {
-    await contract.createGame(title, desc, participants, numberOfWinners, startDate, endDate,{
+    await contract.createGame(title, desc, participants, numberOfWinners, challenges, startDate, endDate,{
       value: toWei(0.05)
     });
   })
