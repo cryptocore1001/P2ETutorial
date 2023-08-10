@@ -24,3 +24,18 @@ export function generateGames(numGames) {
 
   return games
 }
+
+export function generateInvitations(numInvitations) {
+  const invitations = []
+
+  for (let i = 0; i < numInvitations; i++) {
+    const invitation = {
+      account: '0x' + i.toString().padStart(40, '0'), // Example Ethereum address
+      responded: false,
+      title: `Invitation #${i + 1}`,
+    }
+    invitations.push(invitation)
+  }
+
+  return invitations
+}

@@ -37,6 +37,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
     struct InvitationStruct {
         address account;
         bool responded;
+        string title;
     }
 
     struct PlayerScoreSheetStruct {
@@ -97,7 +98,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         uint available;
 
         for (uint256 i = 1; i <= totalGame.current(); i++) {
-            if (!games[i].deleted && !games[i].paidOut && games[i].endDate > currentTime()) {
+            if (!games[i].deleted && !games[i].paidOut) {
                 available++;
             }
         }
@@ -106,7 +107,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         uint index;
 
         for (uint256 i = 1; i <= totalGame.current(); i++) {
-            if (!games[i].deleted && !games[i].paidOut && games[i].endDate > currentTime()) {
+            if (!games[i].deleted && !games[i].paidOut) {
                 ActiveGames[index++] = games[i];
             }
         }
@@ -122,7 +123,8 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
 
         invitationsOf[playerAccount][gameId] = InvitationStruct({
             account: playerAccount,
-            responded: false
+            responded: false,
+            title: games[gameId].title
         });
     }
 
@@ -299,8 +301,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
 
 
     function currentTime() internal view returns (uint256) {
-        uint256 newNum = (block.timestamp * 1000) + 1000;
-        return newNum;
+        return (block.timestamp * 1000) + 1000;
     }
 
     function _payTo(address to, uint256 amount) internal {
