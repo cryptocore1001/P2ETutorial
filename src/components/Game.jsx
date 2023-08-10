@@ -1,5 +1,6 @@
 import { EmojtCha } from 'emojtcha-react'
 import { useState, useEffect } from 'react'
+import ChatButton from './ChatButton'
 
 export default function Game() {
   const numEmojtChas = 5
@@ -50,7 +51,7 @@ export default function Game() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100">
+    <div className="min-h-screen flex flex-col justify-center items-center">
       {timerStarted &&
         validationStates.map((isValidationPassed, index) => (
           <div
@@ -72,13 +73,17 @@ export default function Game() {
         ))}
 
       {!timerStarted && (
-        <button
-          className="bg-blue-700 text-white py-2 px-4 rounded
-          hover:bg-blue-600 duration-200 transition-all my-4 shadow-md shadow-black"
-          onClick={() => setTimerStarted(true)}
-        >
-          Play Game
-        </button>
+        <div className='flex justify-center items-center space-x-2'>
+          <button
+            className="bg-blue-700 text-white py-2 px-4 rounded
+          hover:bg-blue-600 duration-200 transition-all shadow-md shadow-black"
+            onClick={() => setTimerStarted(true)}
+          >
+            Play Game
+          </button>
+
+          <ChatButton />
+        </div>
       )}
 
       {allCaptchasPassed && (
@@ -86,7 +91,7 @@ export default function Game() {
           <p className="text-lg text-center mb-2">
             Time taken: {calculateElapsedTime()} seconds
           </p>
-          <div className='flex justify-between items-center space-x-2'>
+          <div className="flex justify-between items-center space-x-2">
             <button
               className="bg-green-500 text-white py-2 px-4 rounded
               hover:bg-green-700 mt-2 w-full shadow-md shadow-black"
