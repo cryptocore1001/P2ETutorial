@@ -9,8 +9,9 @@ describe('Contracts', () => {
     title = 'Game title',
     participants = 4,
     numberOfWinners = 1,
-    startDate = 1691451065714,
-    endDate = 1691537465714;
+    challenges = 5,
+    startDate = Math.floor(Date.now()),
+    endDate = Math.floor(Date.now()) + (60 * 60 * 24 * 10);
 
   beforeEach(async () => {
     const Contract = await ethers.getContractFactory('PlayToEarn')
@@ -21,7 +22,7 @@ describe('Contracts', () => {
   })
 
   beforeEach(async () => {
-    await contract.createGame(title, desc, participants, numberOfWinners, startDate, endDate,{
+    await contract.createGame(title, desc, participants, numberOfWinners, challenges, startDate, endDate,{
       value: toWei(0.05)
     });
   })

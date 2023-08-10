@@ -18,6 +18,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         address owner;
         uint participants;
         uint numberOfWinners;
+        uint challenges;
         uint plays;
         uint acceptees;
         uint stake;
@@ -37,6 +38,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
     struct InvitationStruct {
         address account;
         bool responded;
+        string title;
     }
 
     struct PlayerScoreSheetStruct {
@@ -72,11 +74,13 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         string memory description,
         uint participants,
         uint numberOfWinners,
+        uint challenges,
         uint startDate,
         uint endDate
     ) public payable {
         require(msg.value > 0 ether, "Stake funds is required");
-        require(participants > 1, "Partiticpants must be greater than one");
+        require(participants > 1, "Partiticpants must be greater than 1");
+        require(challenges >= 5, "Challenges must not be less than 5");
         require(bytes(title).length > 0, "Title is required!");
         require(bytes(description).length > 0, "Description is required!");
         require(startDate > 0, "Start date must be greater than zero");
@@ -86,7 +90,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         totalGame.increment();
         uint gameId = totalGame.current();
 
-        bool isCreated = _saveGame(gameId, title, description, participants, numberOfWinners, startDate);
+        bool isCreated = _saveGame(gameId, title, description, participants, numberOfWinners, challenges, startDate);
         require(isCreated, "Game creation failed");
 
         isCreated = _savePlayer(gameId);
@@ -97,7 +101,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         uint available;
 
         for (uint256 i = 1; i <= totalGame.current(); i++) {
-            if (!games[i].deleted && !games[i].paidOut && games[i].endDate > currentTime()) {
+            if (!games[i].deleted && !games[i].paidOut) {
                 available++;
             }
         }
@@ -106,7 +110,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         uint index;
 
         for (uint256 i = 1; i <= totalGame.current(); i++) {
-            if (!games[i].deleted && !games[i].paidOut && games[i].endDate > currentTime()) {
+            if (!games[i].deleted && !games[i].paidOut) {
                 ActiveGames[index++] = games[i];
             }
         }
@@ -122,7 +126,8 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
 
         invitationsOf[playerAccount][gameId] = InvitationStruct({
             account: playerAccount,
-            responded: false
+            responded: false,
+            title: games[gameId].title
         });
     }
 
@@ -256,6 +261,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         string memory description,
         uint participants,
         uint numberOfWinners,
+        uint challenges,
         uint endDate
     ) internal returns (bool) {
 
@@ -265,6 +271,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         gameData.description =  description;
         gameData.owner =  msg.sender;
         gameData.participants =  participants;
+        gameData.challenges =  challenges;
         gameData.acceptees =  1;
         gameData.stake =  msg.value;
         gameData.numberOfWinners =  numberOfWinners;
@@ -299,8 +306,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
 
 
     function currentTime() internal view returns (uint256) {
-        uint256 newNum = (block.timestamp * 1000) + 1000;
-        return newNum;
+        return (block.timestamp * 1000) + 1000;
     }
 
     function _payTo(address to, uint256 amount) internal {

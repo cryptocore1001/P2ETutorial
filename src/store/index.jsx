@@ -2,6 +2,7 @@ import { createGlobalState } from 'react-hooks-global-state'
 
 const { setGlobalState, useGlobalState, getGlobalState } = createGlobalState({
   connectedAccount: '',
+  currentUser: null,
   createModal: 'scale-0',
   games: [],
   game: null,

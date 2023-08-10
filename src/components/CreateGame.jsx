@@ -5,16 +5,19 @@ import { setGlobalState, useGlobalState } from '../store'
 const CreateGame = () => {
   const [createModal] = useGlobalState('createModal')
 
-  const [question, setQuestion] = useState({
+  const [game, setGame] = useState({
     title: '',
+    participants: '',
+    winners: '',
+    challenges: '',
+    starts: '',
+    ends: '',
     description: '',
-    tags: '',
-    prize: '',
   })
 
   const handleChange = (e) => {
     const { name, value } = e.target
-    setQuestion((prevState) => ({
+    setGame((prevState) => ({
       ...prevState,
       [name]: value,
     }))
@@ -22,11 +25,14 @@ const CreateGame = () => {
 
   const closeModal = () => {
     setGlobalState('createModal', 'scale-0')
-    setQuestion({
+    setGame({
       title: '',
+      participants: '',
+      winners: '',
+      challenges: '',
+      starts: '',
+      ends: '',
       description: '',
-      tags: '',
-      prize: '',
     })
   }
 
@@ -54,41 +60,63 @@ const CreateGame = () => {
                 placeholder="Title"
                 className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm"
                 name="title"
-                value={question.title}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <label className="text-[12px]">Participants</label>
-            <div className="py-4 w-full border border-[#212D4A] rounded-full flex items-center px-4 mb-3 mt-2">
-              <input
-                placeholder="E.g 9"
-                className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm"
-                name="participants"
-                value={question.prize}
+                value={game.title}
                 onChange={handleChange}
                 required
               />
             </div>
 
-            <label className="text-[12px]">Number of Winners</label>
-            <div className="py-4 w-full border border-[#212D4A] rounded-full flex items-center px-4 mb-3 mt-2">
-              <input
-                placeholder="E.g 2"
-                className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm"
-                name="winners"
-                value={question.prize}
-                onChange={handleChange}
-                required
-              />
+            <div className="flex flex-col sm:flex-row justify-between items-center w-full space-x-2 my-3">
+              <div className='w-full'>
+                <label className="text-[12px]">Participants</label>
+                <div className="py-4 w-full border border-[#212D4A] rounded-full flex items-center px-4">
+                  <input
+                    placeholder="E.g 9"
+                    className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm"
+                    name="participants"
+                    value={game.participants}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className='w-full'>
+                <label className="text-[12px]">Number of Winners</label>
+                <div className="py-4 w-full border border-[#212D4A] rounded-full flex items-center px-4">
+                  <input
+                    placeholder="E.g 2"
+                    className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm"
+                    name="winners"
+                    value={game.winners}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className='w-full'>
+                <label className="text-[12px]">Number of challenges</label>
+                <div className="py-4 w-full border border-[#212D4A] rounded-full flex items-center px-4">
+                  <input
+                    placeholder="E.g 2"
+                    className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm"
+                    name="challenges"
+                    value={game.winners}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
             </div>
+
             <label className="text-[12px]">Starts On</label>
             <div className="py-4 w-full border border-[#212D4A] rounded-full flex items-center px-4 mb-3 mt-2">
               <input
                 placeholder="Start Date"
                 className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm"
                 name="winners"
-                value={question.prize}
+                value={game.starts}
                 onChange={handleChange}
                 required
               />
@@ -99,7 +127,7 @@ const CreateGame = () => {
                 placeholder="End Date"
                 className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm"
                 name="winners"
-                value={question.prize}
+                value={game.ends}
                 onChange={handleChange}
                 required
               />
@@ -113,7 +141,7 @@ const CreateGame = () => {
               focus:outline-none focus:ring-0 resize-none
               placeholder-[#3D3857] text-sm"
               name="description"
-              value={question.description}
+              value={game.description}
               onChange={handleChange}
               required
             />
@@ -123,7 +151,7 @@ const CreateGame = () => {
               className="text-sm bg-blue-700 rounded-full w-[150px] h-[48px] text-white
               mt-5 hover:bg-blue-500 transition-colors duration-300"
             >
-              Submit
+              Save
             </button>
           </form>
         </div>
