@@ -18,6 +18,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         address owner;
         uint participants;
         uint numberOfWinners;
+        uint challenges;
         uint plays;
         uint acceptees;
         uint stake;
@@ -73,11 +74,13 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         string memory description,
         uint participants,
         uint numberOfWinners,
+        uint challenges,
         uint startDate,
         uint endDate
     ) public payable {
         require(msg.value > 0 ether, "Stake funds is required");
-        require(participants > 1, "Partiticpants must be greater than one");
+        require(participants > 1, "Partiticpants must be greater than 1");
+        require(challenges >= 5, "Challenges must not be less than 5");
         require(bytes(title).length > 0, "Title is required!");
         require(bytes(description).length > 0, "Description is required!");
         require(startDate > 0, "Start date must be greater than zero");
@@ -87,7 +90,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         totalGame.increment();
         uint gameId = totalGame.current();
 
-        bool isCreated = _saveGame(gameId, title, description, participants, numberOfWinners, startDate);
+        bool isCreated = _saveGame(gameId, title, description, participants, numberOfWinners, challenges, startDate);
         require(isCreated, "Game creation failed");
 
         isCreated = _savePlayer(gameId);
@@ -258,6 +261,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         string memory description,
         uint participants,
         uint numberOfWinners,
+        uint challenges,
         uint endDate
     ) internal returns (bool) {
 
@@ -267,6 +271,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         gameData.description =  description;
         gameData.owner =  msg.sender;
         gameData.participants =  participants;
+        gameData.challenges =  challenges;
         gameData.acceptees =  1;
         gameData.stake =  msg.value;
         gameData.numberOfWinners =  numberOfWinners;
