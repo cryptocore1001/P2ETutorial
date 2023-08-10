@@ -3,6 +3,7 @@ import GamePlay from './pages/GamePlay'
 import Home from './pages/Home'
 import MyGames from './pages/MyGames'
 import Invitations from './pages/Invitations'
+import { ToastContainer } from 'react-toastify'
 
 const App = () => {
   return (
@@ -13,6 +14,19 @@ const App = () => {
         <Route path="/mygames" element={<MyGames />} />
         <Route path="/invitations" element={<Invitations />} />
       </Routes>
+
+      <ToastContainer
+        position="bottom-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </div>
   )
 }

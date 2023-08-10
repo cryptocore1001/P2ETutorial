@@ -73,7 +73,8 @@ export default function Game() {
 
       {!timerStarted && (
         <button
-          className="bg-blue-700 text-white py-2 px-4 rounded hover:bg-blue-600 duration-200 transition-all my-4"
+          className="bg-blue-700 text-white py-2 px-4 rounded
+          hover:bg-blue-600 duration-200 transition-all my-4 shadow-md shadow-black"
           onClick={() => setTimerStarted(true)}
         >
           Play Game
@@ -87,13 +88,15 @@ export default function Game() {
           </p>
           <div className='flex justify-between items-center space-x-2'>
             <button
-              className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-700 mt-2 w-full"
+              className="bg-green-500 text-white py-2 px-4 rounded
+              hover:bg-green-700 mt-2 w-full shadow-md shadow-black"
               onClick={() => console.log('Submit clicked!')}
             >
               Submit
             </button>
             <button
-              className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700 mt-2 w-full"
+              className="bg-red-500 text-white py-2 px-4 rounded
+              hover:bg-red-700 mt-2 w-full shadow-md shadow-black"
               onClick={resetGame}
             >
               Restart

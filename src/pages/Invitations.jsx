@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import Header from '../components/Header'
-import InvitationsList from '../components/InvitationList'
+import { InvitationList, Header } from '../components'
 import { generateInvitations } from '../store/faker'
 
 const Invitations = () => {
@@ -14,7 +13,7 @@ const Invitations = () => {
   return (
     <div>
       <Header />
-      <InvitationsList invitations={invitations} />
+      <InvitationList invitations={invitations} />
     </div>
   )
 }
