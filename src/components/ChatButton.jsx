@@ -1,9 +1,9 @@
 import React from 'react'
-import { AiOutlinePlus } from 'react-icons/ai'
+import { MdOutlineChat } from 'react-icons/md'
 import { FiLogIn } from 'react-icons/fi'
 import { HiLogin } from 'react-icons/hi'
 import { FiUsers } from 'react-icons/fi'
-import { SiGnuprivacyguard } from 'react-icons/si'
+import { AiFillLock } from 'react-icons/ai'
 import { Menu } from '@headlessui/react'
 import { toast } from 'react-toastify'
 import {
@@ -78,19 +78,15 @@ const ChatButton = () => {
   }
 
   return (
-    <Menu
-      as="div"
-      className="inline-block text-left mx-auto fixed right-2 bottom-[80px]"
-    >
+    <Menu className="relative" as="div">
       <Menu.Button
-        className="bg-blue-700 hover:bg-blue-600 text-white font-bold
-        rounded-full transition-all duration-200 p-3 focus:outline-none
-          focus-visible:ring-2 focus-visible:ring-white
-          focus-visible:ring-opacity-75 shadow-md shadow-black"
+        className="bg-white text-blue-700 py-2 px-4 rounded flex justify-start items-center space-x-1
+      hover:bg-blue-600 hover:text-white transition-all duration-300 shadow-md shadow-black"
         as="button"
       >
-        <AiOutlinePlus size={20} />
+        <MdOutlineChat size={20} /> <span>Chat</span>
       </Menu.Button>
+
       <Menu.Items
         className="absolute right-0 bottom-14 mt-2 w-56 origin-top-right
           divide-y divide-gray-100 rounded-md bg-white shadow-lg shadow-black
@@ -100,15 +96,27 @@ const ChatButton = () => {
           <>
             <Menu.Item>
               {({ active }) => (
-                <button
-                  className={`flex justify-start items-center space-x-1 ${
-                    active ? 'bg-gray-200 text-black' : 'text-blue-500'
-                  } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                  onClick={handleSignUp}
-                >
-                  <SiGnuprivacyguard size={17} />
-                  <span>Chat SignUp</span>
-                </button>
+                <>
+                  <button
+                    className={`flex justify-start items-center space-x-1 ${
+                      active ? 'bg-gray-200 text-black' : 'text-gray-900'
+                    } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                    onClick={() => setGlobalState('chatModal', 'scale-100')}
+                  >
+                    <FiUsers size={17} />
+                    <span>Recent Chats</span>
+                  </button>
+                  
+                  <button
+                    className={`flex justify-start items-center space-x-1 ${
+                      active ? 'bg-gray-200 text-black' : 'text-blue-500'
+                    } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                    onClick={handleSignUp}
+                  >
+                    <AiFillLock size={17} />
+                    <span>Sign Up</span>
+                  </button>
+                </>
               )}
             </Menu.Item>
             <Menu.Item>

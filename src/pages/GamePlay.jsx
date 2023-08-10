@@ -1,12 +1,12 @@
 import React from 'react'
-import { Header, Game, ChatButton } from '../components'
+import { Header, Game, Chat } from '../components'
 
 const GamePlay = () => {
   return (
     <div>
       <Header />
       <Game />
-      <ChatButton />
+      <Chat />
     </div>
   )
 }
