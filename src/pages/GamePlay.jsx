@@ -1,14 +1,14 @@
-import React from "react";
-import { Header } from "../components";
-import Game from "../components/Game";
+import React from 'react'
+import { Header, Game, ChatButton } from '../components'
 
 const GamePlay = () => {
   return (
     <div>
       <Header />
       <Game />
+      <ChatButton />
     </div>
-  );
-};
+  )
+}
 
-export default GamePlay;
+export default GamePlay

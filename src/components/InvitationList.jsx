@@ -1,7 +1,7 @@
 import React from 'react'
 import { truncate } from '../store'
 
-const InvitationsList = ({ invitations }) => {
+const InvitationList = ({ invitations }) => {
   return (
     <div className="w-3/5 mx-auto my-10">
       <h2 className="text-2xl font-semibold text-gray-800 mb-4">
@@ -33,4 +33,4 @@ const InvitationsList = ({ invitations }) => {
   )
 }
 
-export default InvitationsList
+export default InvitationList
