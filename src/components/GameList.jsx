@@ -1,32 +1,47 @@
 import React from 'react'
-import { formatDate, truncate } from '../store'
+import { formatDate, setGlobalState, truncate } from '../store'
 import { Link } from 'react-router-dom'
 
 const GameList = ({ games }) => {
+  const handleInviteClick = (game) => {
+    setGlobalState('inviteModal', 'scale-100')
+    console.log(game)
+  }
   return (
     <div className="w-3/5 mx-auto my-10">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {
-          games.length > 0 ? 
+        {games.length > 0 ? (
           games.map((game) => (
-          <Link
-            to={'/gameplay/' + game.id}
-            key={game.id}
-            className="bg-white p-6 rounded-lg shadow-md"
-          >
-            <h3 className="text-lg font-semibold mb-2">{game.title}</h3>
-            <p className="text-gray-600 mb-2">{game.description}</p>
-            <p className="text-gray-600">
-              Owner: {truncate(game.owner, 4, 4, 11)}
-            </p>
-            <p className="text-gray-600">
-              Created Date: {formatDate(game.startDate)}
-            </p>
-          </Link>
-        ))
-        : <div className='text-xl'>You do not have any game</div>
-        }
-        
+            <div key={game.id} className="bg-white p-6 rounded-lg shadow-md">
+              <h3 className="text-lg font-semibold mb-2">{game.title}</h3>
+              <p className="text-gray-600 mb-2">{game.description}</p>
+              <p className="text-gray-600">
+                Owner: {truncate(game.owner, 4, 4, 11)}
+              </p>
+              <p className="text-gray-600">
+                Starts on: {formatDate(game.startDate)}
+              </p>
+              <div className="flex justify-start items-center space-x-2 mt-3">
+                <Link
+                  to={'/gameplay/' + game.id}
+                  className="bg-red-700 text-white py-2 px-5 rounded-full
+                  hover:bg-red-600 duration-200 transition-all"
+                >
+                  Play
+                </Link>
+                <button
+                  onClick={() => handleInviteClick(game)}
+                  className="bg-blue-700 text-white py-2 px-5 rounded-full
+                  hover:bg-blue-600 duration-200 transition-all"
+                >
+                  Invite
+                </button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="text-xl">You do not have any game</div>
+        )}
       </div>
     </div>
   )
