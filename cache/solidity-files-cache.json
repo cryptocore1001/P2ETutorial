@@ -7,9 +7,14 @@
       "contentHash": "ca6a607f458847726701126deff31266",
 =======
     "C:\\Users\\DELL\\Desktop\\DAPPMENTORS\\P2E\\src\\contracts\\PlayToEarn.sol": {
+<<<<<<< HEAD
       "lastModificationDate": 1691750342703,
       "contentHash": "270f64cf5b209ec6d7b0fcbe2bc75222",
 >>>>>>> 9b3ddfac995b89db0e3e4e2f3845296a248f9b50
+=======
+      "lastModificationDate": 1691756711240,
+      "contentHash": "356b5a5009692b29e0b7c9a529ff9133",
+>>>>>>> 9a165725d37d421a06d17b849f6832730c7ec35c
       "sourceName": "src/contracts/PlayToEarn.sol",
       "solcConfig": {
         "version": "0.8.11",
