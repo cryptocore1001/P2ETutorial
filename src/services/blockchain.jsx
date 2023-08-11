@@ -45,7 +45,7 @@ const isWalletConnected = async () => {
 
     window.ethereum.on('accountsChanged', async () => {
       setGlobalState('connectedAccount', accounts[0])
-      // await getMyNfts()
+      await loadData()
       await isWalletConnected()
     })
 
@@ -189,6 +189,7 @@ const payout = async (gameId) => {
 
 const loadData = async () => {
   await getMyGames()
+  await getInvitations()
 }
 
 const getGames = async () => {
@@ -219,7 +220,6 @@ const getInvitations = async () => {
     const contract = await getEthereumContract()
     const invitations = await contract.getInvitations()
     setGlobalState('invitations', structuredInvitations(invitations))
-    setGlobalState('game', structuredGames([game])[0])
   } catch (err) {
     reportError(err)
   }
@@ -279,6 +279,7 @@ const structuredInvitations = (invitations) =>
   invitations.map((invitation) => ({
     account: invitation.account.toLowerCase(),
     responded: invitation.responded,
+    title: invitation.title,
   }))
 
 export {

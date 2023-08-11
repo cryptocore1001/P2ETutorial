@@ -1,14 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { InvitationList, Header } from '../components'
-import { generateInvitations } from '../store/faker'
+import { useGlobalState } from '../store'
 
 const Invitations = () => {
-  const [invitations, setInvitations] = useState([])
-
-  useEffect(() => {
-    const invitationsData = generateInvitations(6)
-    setInvitations(invitationsData)
-  }, [])
+  const [invitations] = useGlobalState('invitations')
 
   return (
     <div>
