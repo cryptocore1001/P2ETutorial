@@ -280,6 +280,28 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         return isListed[gameId][player];
     }
 
+    function getMyGames() public view returns (GameStruct[] memory userGames) {
+        uint available;
+
+        for (uint256 i = 1; i <= totalGame.current(); i++) {
+            if (isPlayerListed(i, msg.sender) && !games[i].deleted && !games[i].paidOut && currentTime() < games[i].endDate) {
+                available++;
+            }
+        }
+
+        userGames = new GameStruct[](available);
+        uint index;
+
+        for (uint256 i = 1; i <= totalGame.current(); i++) {
+            if (isPlayerListed(i, msg.sender) && !games[i].deleted && !games[i].paidOut && currentTime() < games[i].endDate) {
+                userGames[index++] = games[i];
+            }
+        }
+    }
+
+
+
+
     function sortScores(
         PlayerScoreSheetStruct[] memory playersScores
     ) public pure returns (PlayerScoreSheetStruct[] memory) {
