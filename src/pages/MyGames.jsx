@@ -1,20 +1,21 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Header } from '../components'
-import { generateGames } from '../store/faker'
 import GameList from '../components/GameList'
+import { useGlobalState } from '../store'
 
 const MyGames = () => {
-  const [games, setGames] = useState([])
-
-  useEffect(() => {
-    const gameData = generateGames(6)
-    setGames(gameData)
-  }, [])
+  const [games] = useGlobalState('games')
 
   return (
     <div>
       <Header />
       <GameList games={games} />
+
+      {games.length < 1 && (
+        <div className="w-3/5 mx-auto my-10">
+          <p>You don't have any games yet...</p>
+        </div>
+      )}
     </div>
   )
 }

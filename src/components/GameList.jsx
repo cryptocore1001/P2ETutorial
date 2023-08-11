@@ -18,7 +18,7 @@ const GameList = ({ games }) => {
               Owner: {truncate(game.owner, 4, 4, 11)}
             </p>
             <p className="text-gray-600">
-              Start Date: {formatDate(game.startDate)}
+              Created Date: {formatDate(game.startDate)}
             </p>
           </Link>
         ))}
