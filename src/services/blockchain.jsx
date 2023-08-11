@@ -188,7 +188,7 @@ const payout = async (gameId) => {
 }
 
 const loadData = async () => {
-  await getGames()
+  await getMyGames()
 }
 
 const getGames = async () => {

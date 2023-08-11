@@ -93,7 +93,16 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         totalGame.increment();
         uint gameId = totalGame.current();
 
-        bool isCreated = _saveGame(gameId, title, description, participants, numberOfWinners, challenges, startDate);
+        bool isCreated = _saveGame(
+            gameId,
+            title,
+            description,
+            participants,
+            numberOfWinners,
+            challenges,
+            startDate,
+            endDate
+        );
         require(isCreated, "Game creation failed");
 
         isCreated = _savePlayer(gameId);
@@ -275,7 +284,12 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         uint available;
 
         for (uint256 i = 1; i <= totalGame.current(); i++) {
-            if (isPlayerListed(i, msg.sender) && !games[i].deleted && !games[i].paidOut && currentTime() < games[i].endDate) {
+            if (
+                isPlayerListed(i, msg.sender) &&
+                !games[i].deleted &&
+                !games[i].paidOut &&
+                currentTime() < games[i].endDate
+            ) {
                 available++;
             }
         }
@@ -284,14 +298,16 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         uint index;
 
         for (uint256 i = 1; i <= totalGame.current(); i++) {
-            if (isPlayerListed(i, msg.sender) && !games[i].deleted && !games[i].paidOut && currentTime() < games[i].endDate) {
+            if (
+                isPlayerListed(i, msg.sender) &&
+                !games[i].deleted &&
+                !games[i].paidOut &&
+                currentTime() < games[i].endDate
+            ) {
                 userGames[index++] = games[i];
             }
         }
     }
-
-
-
 
     function sortScores(
         PlayerScoreSheetStruct[] memory playersScores
@@ -335,16 +351,17 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
     ) internal returns (bool) {
         GameStruct memory gameData;
         gameData.id = gameId;
-        gameData.title =  title;
-        gameData.description =  description;
-        gameData.owner =  msg.sender;
-        gameData.participants =  participants;
-        gameData.challenges =  challenges;
-        gameData.acceptees =  1;
-        gameData.stake =  msg.value;
-        gameData.numberOfWinners =  numberOfWinners;
-        gameData.endDate =  endDate;
-        gameData.timestamp =  currentTime();
+        gameData.title = title;
+        gameData.description = description;
+        gameData.owner = msg.sender;
+        gameData.participants = participants;
+        gameData.challenges = challenges;
+        gameData.acceptees = 1;
+        gameData.stake = msg.value;
+        gameData.numberOfWinners = numberOfWinners;
+        gameData.startDate = startDate;
+        gameData.endDate = endDate;
+        gameData.timestamp = currentTime();
 
         games[gameId] = gameData;
         gameExists[gameId] = true;

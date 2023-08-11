@@ -1,20 +1,9 @@
 {
   "_format": "hh-sol-cache-2",
   "files": {
-<<<<<<< HEAD
     "/Users/daltonic/Sites/p2e/src/contracts/PlayToEarn.sol": {
-      "lastModificationDate": 1691751086050,
-      "contentHash": "ca6a607f458847726701126deff31266",
-=======
-    "C:\\Users\\DELL\\Desktop\\DAPPMENTORS\\P2E\\src\\contracts\\PlayToEarn.sol": {
-<<<<<<< HEAD
-      "lastModificationDate": 1691750342703,
-      "contentHash": "270f64cf5b209ec6d7b0fcbe2bc75222",
->>>>>>> 9b3ddfac995b89db0e3e4e2f3845296a248f9b50
-=======
-      "lastModificationDate": 1691756711240,
-      "contentHash": "356b5a5009692b29e0b7c9a529ff9133",
->>>>>>> 9a165725d37d421a06d17b849f6832730c7ec35c
+      "lastModificationDate": 1691770760712,
+      "contentHash": "b477ef16301b3adbc337027dd0ca1ff5",
       "sourceName": "src/contracts/PlayToEarn.sol",
       "solcConfig": {
         "version": "0.8.11",
@@ -51,8 +40,8 @@
         "PlayToEarn"
       ]
     },
-    "C:\\Users\\DELL\\Desktop\\DAPPMENTORS\\P2E\\node_modules\\@openzeppelin\\contracts\\access\\Ownable.sol": {
-      "lastModificationDate": 1688391560046,
+    "/Users/daltonic/Sites/p2e/node_modules/@openzeppelin/contracts/access/Ownable.sol": {
+      "lastModificationDate": 1691746057004,
       "contentHash": "5a20b2cad87ddb61c7a3a6af21289e28",
       "sourceName": "@openzeppelin/contracts/access/Ownable.sol",
       "solcConfig": {
@@ -88,8 +77,8 @@
         "Ownable"
       ]
     },
-    "C:\\Users\\DELL\\Desktop\\DAPPMENTORS\\P2E\\node_modules\\@openzeppelin\\contracts\\utils\\Counters.sol": {
-      "lastModificationDate": 1688391544707,
+    "/Users/daltonic/Sites/p2e/node_modules/@openzeppelin/contracts/utils/Counters.sol": {
+      "lastModificationDate": 1691746057015,
       "contentHash": "74654e3ae5d7f39555055dfe244dab7a",
       "sourceName": "@openzeppelin/contracts/utils/Counters.sol",
       "solcConfig": {
@@ -123,8 +112,8 @@
         "Counters"
       ]
     },
-    "C:\\Users\\DELL\\Desktop\\DAPPMENTORS\\P2E\\node_modules\\@openzeppelin\\contracts\\security\\ReentrancyGuard.sol": {
-      "lastModificationDate": 1688391560279,
+    "/Users/daltonic/Sites/p2e/node_modules/@openzeppelin/contracts/security/ReentrancyGuard.sol": {
+      "lastModificationDate": 1691746057010,
       "contentHash": "1535f8c0c68463f8c1b5239f7584e71f",
       "sourceName": "@openzeppelin/contracts/security/ReentrancyGuard.sol",
       "solcConfig": {
@@ -158,8 +147,8 @@
         "ReentrancyGuard"
       ]
     },
-    "C:\\Users\\DELL\\Desktop\\DAPPMENTORS\\P2E\\node_modules\\@openzeppelin\\contracts\\utils\\Context.sol": {
-      "lastModificationDate": 1688391544695,
+    "/Users/daltonic/Sites/p2e/node_modules/@openzeppelin/contracts/utils/Context.sol": {
+      "lastModificationDate": 1691746057015,
       "contentHash": "5f2c5c4b6af2dd4551027144797bc8be",
       "sourceName": "@openzeppelin/contracts/utils/Context.sol",
       "solcConfig": {

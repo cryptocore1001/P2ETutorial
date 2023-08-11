@@ -44,14 +44,11 @@ const CreateGame = () => {
 
   const handleGameCreation = async (e) => {
     e.preventDefault()
-
-<<<<<<< HEAD
+    
     game.starts = new Date(game.starts).getTime()
     game.ends = new Date(game.ends).getTime()
 
-=======
->>>>>>> 9a165725d37d421a06d17b849f6832730c7ec35c
-    await toast.promise(new Promise(async (resolve, reject) => {
+   await toast.promise(new Promise(async (resolve, reject) => {
         await createGame(game)
         .then((tx)=>{
           console.log(tx)
