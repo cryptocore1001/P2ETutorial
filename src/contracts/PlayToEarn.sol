@@ -84,18 +84,30 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         require(bytes(title).length > 0, "Title is required!");
         require(bytes(description).length > 0, "Description is required!");
         require(startDate > 0, "Start date must be greater than zero");
-        require(endDate > startDate, "End date must be greater than start date");
+        require(
+            endDate > startDate,
+            "End date must be greater than start date"
+        );
         require(numberOfWinners > 0, "Number Of winners required!");
 
         totalGame.increment();
         uint gameId = totalGame.current();
 
-        bool isCreated = _saveGame(gameId, title, description, participants, numberOfWinners, challenges, startDate, endDate);
+        bool isCreated = _saveGame(
+            gameId,
+            title,
+            description,
+            participants,
+            numberOfWinners,
+            challenges,
+            startDate,
+            endDate
+        );
         require(isCreated, "Game creation failed");
 
         isCreated = _savePlayer(gameId);
         require(isCreated, "Player creation failed");
-    }  
+    }
 
     function getGames() public view returns (GameStruct[] memory ActiveGames) {
         uint available;
@@ -116,13 +128,16 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         }
     }
 
-    function getGame(uint id) public view returns(GameStruct memory) {
+    function getGame(uint id) public view returns (GameStruct memory) {
         return games[id];
     }
 
     function invitePlayer(address playerAccount, uint gameId) public {
         require(gameExists[gameId], "Game does not exist");
-        require(!isListed[gameId][playerAccount], "Player is already in this game");
+        require(
+            !isListed[gameId][playerAccount],
+            "Player is already in this game"
+        );
 
         invitationsOf[playerAccount][gameId] = InvitationStruct({
             account: playerAccount,
@@ -133,10 +148,19 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
 
     function acceptInvitation(uint gameId) public payable {
         require(gameExists[gameId], "Game does not exist");
-        require(msg.value >= games[gameId].stake, "Insuffcient funds for stakes");
-        require(invitationsOf[msg.sender][gameId].account == msg.sender, "Unauthorized entity");
-        require(!invitationsOf[msg.sender][gameId].responded, "Previouly responded");
-        
+        require(
+            msg.value >= games[gameId].stake,
+            "Insuffcient funds for stakes"
+        );
+        require(
+            invitationsOf[msg.sender][gameId].account == msg.sender,
+            "Unauthorized entity"
+        );
+        require(
+            !invitationsOf[msg.sender][gameId].responded,
+            "Previouly responded"
+        );
+
         bool isCreated = _savePlayer(gameId);
         require(isCreated, "Player creation failed");
 
@@ -145,17 +169,28 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
 
     function rejectInvitation(uint gameId) public {
         require(gameExists[gameId], "Game does not exist");
-        require(invitationsOf[msg.sender][gameId].account == msg.sender, "You are not invited to this game");
-        require(!invitationsOf[msg.sender][gameId].responded, "Invitation is already rejected");
+        require(
+            invitationsOf[msg.sender][gameId].account == msg.sender,
+            "You are not invited to this game"
+        );
+        require(
+            !invitationsOf[msg.sender][gameId].responded,
+            "Invitation is already rejected"
+        );
 
         invitationsOf[msg.sender][gameId].responded = true;
     }
 
-    function getInvitations() public view returns (InvitationStruct[] memory Invitations) {
+    function getInvitations()
+        public
+        view
+        returns (InvitationStruct[] memory Invitations)
+    {
         uint totalInvitations;
 
         for (uint i = 1; i <= totalGame.current(); i++) {
-            if (invitationsOf[msg.sender][i].account == msg.sender) totalInvitations++;
+            if (invitationsOf[msg.sender][i].account == msg.sender)
+                totalInvitations++;
         }
 
         Invitations = new InvitationStruct[](totalInvitations);
@@ -169,50 +204,64 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
     }
 
     function recordScore(uint gameId, uint score) public {
-        require(games[gameId].numberOfWinners + 1 == games[gameId].acceptees, "Not enough players yet");
+        require(
+            games[gameId].numberOfWinners + 1 == games[gameId].acceptees,
+            "Not enough players yet"
+        );
         require(!scores[gameId][msg.sender].played, "Player already recorded");
-        require(currentTime() >= games[gameId].startDate && currentTime() < games[gameId].endDate, "Game play must be in session");
+        require(
+            currentTime() >= games[gameId].startDate &&
+                currentTime() < games[gameId].endDate,
+            "Game play must be in session"
+        );
 
         scores[gameId][msg.sender].score = score;
         scores[gameId][msg.sender].played = true;
     }
 
-    function getScores(uint gameId) public view returns (PlayerScoreSheetStruct[] memory Scores) {
+    function getScores(
+        uint gameId
+    ) public view returns (PlayerScoreSheetStruct[] memory Scores) {
         uint available;
         for (uint i = 1; i <= totalPlayers.current(); i++) {
-            if(players[i].gameId == gameId) available++;
+            if (players[i].gameId == gameId) available++;
         }
 
         Scores = new PlayerScoreSheetStruct[](available);
 
         uint index;
         for (uint i = 1; i <= totalPlayers.current(); i++) {
-            if(players[i].gameId == gameId) {
+            if (players[i].gameId == gameId) {
                 Scores[index++] = scores[gameId][players[i].player];
             }
         }
     }
-
 
     function payout(uint gameId) public {
         require(gameExists[gameId], "Game does not exist");
         require(currentTime() > games[gameId].endDate, "Game still in session");
         require(!games[gameId].paidOut, "Game already paid out");
 
-        uint fee = games[gameId].stake * serviceFee / 100;
+        uint fee = (games[gameId].stake * serviceFee) / 100;
         uint profit = games[gameId].stake - fee;
         _payTo(owner(), fee);
 
+        // paying the game owner half the service fee and subtracting it from the game profit
+        profit = profit - (fee / 2);
+        _payTo(games[gameId].owner, (fee / 2));
+
         uint available;
         for (uint i = 1; i <= totalPlayers.current(); i++) {
-            if(players[i].gameId == gameId) available++;
+            if (players[i].gameId == gameId) available++;
         }
 
-        PlayerScoreSheetStruct[] memory Scores = new PlayerScoreSheetStruct[](available);
+        PlayerScoreSheetStruct[] memory Scores = new PlayerScoreSheetStruct[](
+            available
+        );
 
         uint index;
         for (uint i = 1; i <= totalPlayers.current(); i++) {
-            if(players[i].gameId == gameId) {
+            if (players[i].gameId == gameId) {
                 Scores[index++] = scores[gameId][players[i].player];
             }
         }
@@ -224,7 +273,10 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         }
     }
 
-    function isPlayerListed(uint gameId, address player) public view returns (bool) {
+    function isPlayerListed(
+        uint gameId,
+        address player
+    ) public view returns (bool) {
         return isListed[gameId][player];
     }
 
@@ -232,7 +284,12 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         uint available;
 
         for (uint256 i = 1; i <= totalGame.current(); i++) {
-            if (isPlayerListed(i, msg.sender) && !games[i].deleted && !games[i].paidOut && currentTime() < games[i].endDate) {
+            if (
+                isPlayerListed(i, msg.sender) &&
+                !games[i].deleted &&
+                !games[i].paidOut &&
+                currentTime() < games[i].endDate
+            ) {
                 available++;
             }
         }
@@ -241,19 +298,22 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         uint index;
 
         for (uint256 i = 1; i <= totalGame.current(); i++) {
-            if (isPlayerListed(i, msg.sender) && !games[i].deleted && !games[i].paidOut && currentTime() < games[i].endDate) {
+            if (
+                isPlayerListed(i, msg.sender) &&
+                !games[i].deleted &&
+                !games[i].paidOut &&
+                currentTime() < games[i].endDate
+            ) {
                 userGames[index++] = games[i];
             }
         }
     }
 
-
-
-
-    
-    function sortScores(PlayerScoreSheetStruct[] memory playersScores) public pure returns (PlayerScoreSheetStruct[] memory) {
+    function sortScores(
+        PlayerScoreSheetStruct[] memory playersScores
+    ) public pure returns (PlayerScoreSheetStruct[] memory) {
         uint n = playersScores.length;
-        
+
         for (uint i = 0; i < n - 1; i++) {
             for (uint j = 0; j < n - i - 1; j++) {
                 // Check if the players played before comparing their scores
@@ -264,7 +324,9 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
                         playersScores[j] = playersScores[j + 1];
                         playersScores[j + 1] = temp;
                     }
-                } else if (!playersScores[j].played && playersScores[j + 1].played) {
+                } else if (
+                    !playersScores[j].played && playersScores[j + 1].played
+                ) {
                     // Sort players who didn't play below players who played
                     // Swap the elements
                     PlayerScoreSheetStruct memory temp = playersScores[j];
@@ -273,7 +335,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
                 }
             }
         }
-    
+
         return playersScores;
     }
 
@@ -287,30 +349,26 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         uint startDate,
         uint endDate
     ) internal returns (bool) {
-
         GameStruct memory gameData;
         gameData.id = gameId;
-        gameData.title =  title;
-        gameData.description =  description;
-        gameData.owner =  msg.sender;
-        gameData.participants =  participants;
-        gameData.challenges =  challenges;
-        gameData.acceptees =  1;
-        gameData.stake =  msg.value;
-        gameData.numberOfWinners =  numberOfWinners;
-        gameData.startDate =  startDate;
-        gameData.endDate =  endDate;
-        gameData.timestamp =  currentTime();
+        gameData.title = title;
+        gameData.description = description;
+        gameData.owner = msg.sender;
+        gameData.participants = participants;
+        gameData.challenges = challenges;
+        gameData.acceptees = 1;
+        gameData.stake = msg.value;
+        gameData.numberOfWinners = numberOfWinners;
+        gameData.startDate = startDate;
+        gameData.endDate = endDate;
+        gameData.timestamp = currentTime();
 
         games[gameId] = gameData;
         gameExists[gameId] = true;
         return true;
     }
 
-
-    function _savePlayer(
-        uint gameId
-    ) internal returns (bool) {
+    function _savePlayer(uint gameId) internal returns (bool) {
         totalPlayers.increment();
         uint playerId = totalPlayers.current();
 
@@ -327,7 +385,6 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         totalBalance += msg.value;
         return true;
     }
-
 
     function currentTime() internal view returns (uint256) {
         return (block.timestamp * 1000) + 1000;

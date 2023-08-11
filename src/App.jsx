@@ -6,16 +6,17 @@ import Invitations from './pages/Invitations'
 import { ToastContainer } from 'react-toastify'
 import { useEffect } from 'react'
 import { checkAuthState } from './services/chat'
-import { isWalletConnected } from './services/blockchain'
+import { isWalletConnected, loadData } from './services/blockchain'
 
 const App = () => {
   useEffect(() => {
     isWalletConnected()
-    // const fetchData = async () => {
-    //   await checkAuthState()
-    // }
+    const fetchData = async () => {
+      await loadData()
+      await checkAuthState()
+    }
 
-    // fetchData()
+    fetchData()
   }, [])
 
   return (

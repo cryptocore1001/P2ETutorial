@@ -3,9 +3,11 @@ import { FaTimes } from 'react-icons/fa'
 import { setGlobalState, useGlobalState } from '../store'
 import { createGame } from '../services/blockchain'
 import { toast } from 'react-toastify'
+import { useNavigate } from 'react-router-dom'
 
 const CreateGame = () => {
   const [createModal] = useGlobalState('createModal')
+  const navigate = useNavigate()
 
   const [game, setGame] = useState({
     title: '',
@@ -42,13 +44,17 @@ const CreateGame = () => {
 
   const handleGameCreation = async (e) => {
     e.preventDefault()
+    
+    game.starts = new Date(game.starts).getTime()
+    game.ends = new Date(game.ends).getTime()
 
-    await toast.promise(new Promise(async (resolve, reject) => {
+   await toast.promise(new Promise(async (resolve, reject) => {
         await createGame(game)
         .then((tx)=>{
           console.log(tx)
-          resolve(tx)
           closeModal()
+          resolve(tx)
+          navigate('/mygames')
         })
         .catch((err)=>{
           reject(err)
@@ -117,6 +123,7 @@ const CreateGame = () => {
                   <input
                     placeholder="E.g 2"
                     type="number"
+                    min={1}
                     className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm border-none focus:outline-none focus:ring-0 py-0"
                     name="winners"
                     value={game.winners}
@@ -130,8 +137,9 @@ const CreateGame = () => {
                 <label className="text-[12px]">Number of challenges</label>
                 <div className="py-2 w-full border border-[#212D4A] rounded-full flex items-center px-4">
                   <input
-                    placeholder="E.g 2"
+                    placeholder="E.g 5"
                     type="number"
+                    min={5}
                     className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm border-none focus:outline-none focus:ring-0 py-0"
                     name="challenges"
                     value={game.challenges}
@@ -152,6 +160,7 @@ const CreateGame = () => {
                   type="number"
                   onChange={handleChange}
                   step={0.0001}
+                  min={0.0001}
                   required
                 />
               </div>
@@ -163,7 +172,7 @@ const CreateGame = () => {
                 placeholder="Start Date"
                 className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm border-none focus:outline-none focus:ring-0 py-0"
                 name="starts"
-                type="text"
+                type="date"
                 value={game.starts}
                 onChange={handleChange}
                 required
@@ -175,7 +184,7 @@ const CreateGame = () => {
                 placeholder="End Date"
                 className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm border-none focus:outline-none focus:ring-0 py-0"
                 name="ends"
-                type='text'
+                type='date'
                 value={game.ends}
                 onChange={handleChange}
                 required
