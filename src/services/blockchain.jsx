@@ -259,11 +259,12 @@ const structuredPlayersScore = (playersScore) =>
       bool: playerScore.played
     }))
 
- const structuredInvitations = (invitations) => 
-    invitations.map((invitation) => ({
-      account: invitation.account.toLowerCase(),
-      responded: invitation.responded
-    })) 
+ const structuredInvitations = (invitations) =>
+   invitations.map((invitation) => ({
+     account: invitation.account.toLowerCase(),
+     responded: invitation.responded,
+     title: invitation.title,
+   })); 
 
 export {
   connectWallet,

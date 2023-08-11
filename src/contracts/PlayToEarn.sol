@@ -36,6 +36,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
     }
 
     struct InvitationStruct {
+        uint gameId;
         address account;
         bool responded;
         string title;
@@ -125,6 +126,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         require(!isListed[gameId][playerAccount], "Player is already in this game");
 
         invitationsOf[playerAccount][gameId] = InvitationStruct({
+            gameId: gameId,
             account: playerAccount,
             responded: false,
             title: games[gameId].title
@@ -246,9 +248,6 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
             }
         }
     }
-
-
-
 
     
     function sortScores(PlayerScoreSheetStruct[] memory playersScores) public pure returns (PlayerScoreSheetStruct[] memory) {

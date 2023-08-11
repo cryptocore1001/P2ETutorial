@@ -2,6 +2,7 @@ import React from 'react'
 import { formatDate, truncate } from '../store'
 import { Link } from 'react-router-dom'
 
+
 const GameList = ({ games }) => {
   return (
     <div className="w-3/5 mx-auto my-10">
