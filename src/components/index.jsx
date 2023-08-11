@@ -6,6 +6,7 @@ import ChatButton from './ChatButton'
 import InvitationList from './InvitationList'
 import Chat from './Chat'
 import GameList from './GameList'
+import InviteModal from './InviteModal'
 
 export {
   Header,
@@ -16,4 +17,5 @@ export {
   InvitationList,
   Chat,
   GameList,
-};
+  InviteModal,
+}

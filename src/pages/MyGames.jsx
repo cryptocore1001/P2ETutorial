@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react'
-import { Header, GameList } from "../components";
+import React, { useEffect } from 'react'
+import { Header, GameList, InviteModal } from '../components'
 import { getMyGames } from '../services/blockchain'
 import { useGlobalState } from '../store'
 
 const MyGames = () => {
   const [myGames] = useGlobalState('myGames')
 
-  const fetchGameData = async ()=> {
+  const fetchGameData = async () => {
     await getMyGames()
   }
 
@@ -18,8 +18,9 @@ const MyGames = () => {
     <div>
       <Header />
       <GameList games={myGames} />
+      <InviteModal />
     </div>
-  );
+  )
 }
 
 export default MyGames
