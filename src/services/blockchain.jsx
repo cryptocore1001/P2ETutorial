@@ -223,6 +223,17 @@ const getScores = async (gameId) => {
   setGlobalState("scores", structuredPlayersScore(scores));
 }
 
+const getMyGames = async () => {
+  try {
+    if (!ethereum) return alert("Please install Metamask");
+    const contract = await getEthereumContract();
+    const games = await contract.getMyGames();
+    setGlobalState("myGames", structuredGames(games));
+  } catch (err) {
+    reportError(err);
+  }
+}
+
 const structuredGames = (games) =>
   games.map((game) => ({
     id: game.id.toNumber(),
@@ -264,6 +275,7 @@ export {
   recordScore,
   payout,
   getGames,
+  getMyGames,
   getGame,
   getInvitations,
   getScores,

@@ -10,6 +10,7 @@ const { setGlobalState, useGlobalState, getGlobalState } = createGlobalState({
   messages: [],
   invitations: [],
   scores: [],
+  myGames: [],
 })
 
 const truncate = (text, startChars, endChars, maxLength) => {

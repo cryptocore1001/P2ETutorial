@@ -6,7 +6,9 @@ const GameList = ({ games }) => {
   return (
     <div className="w-3/5 mx-auto my-10">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {games.map((game) => (
+        {
+          games.length > 0 ? 
+          games.map((game) => (
           <Link
             to={'/gameplay/' + game.id}
             key={game.id}
@@ -21,7 +23,10 @@ const GameList = ({ games }) => {
               Start Date: {formatDate(game.startDate)}
             </p>
           </Link>
-        ))}
+        ))
+        : <div className='text-xl'>You do not have any game</div>
+        }
+        
       </div>
     </div>
   )

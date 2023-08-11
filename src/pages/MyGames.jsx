@@ -1,22 +1,25 @@
 import React, { useEffect, useState } from 'react'
-import { Header } from '../components'
-import { generateGames } from '../store/faker'
-import GameList from '../components/GameList'
+import { Header, GameList } from "../components";
+import { getMyGames } from '../services/blockchain'
+import { useGlobalState } from '../store'
 
 const MyGames = () => {
-  const [games, setGames] = useState([])
+  const [myGames] = useGlobalState('myGames')
+
+  const fetchGameData = async ()=> {
+    await getMyGames()
+  }
 
   useEffect(() => {
-    const gameData = generateGames(6)
-    setGames(gameData)
+    fetchGameData()
   }, [])
 
   return (
     <div>
       <Header />
-      <GameList games={games} />
+      <GameList games={myGames} />
     </div>
-  )
+  );
 }
 
 export default MyGames

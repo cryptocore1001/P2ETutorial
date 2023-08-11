@@ -43,9 +43,6 @@ const CreateGame = () => {
   const handleGameCreation = async (e) => {
     e.preventDefault()
 
-    console.log(
-      game.title+' '+game.description+' '+game.participants+' '+game.winners+' '+game.stake+' '+game.starts+' '+game.ends+' '+game.challenges
-    )
     await toast.promise(new Promise(async (resolve, reject) => {
         await createGame(game)
         .then((tx)=>{

@@ -11,11 +11,11 @@ import { isWalletConnected } from './services/blockchain'
 const App = () => {
   useEffect(() => {
     isWalletConnected()
-    const fetchData = async () => {
-      await checkAuthState()
-    }
+    // const fetchData = async () => {
+    //   await checkAuthState()
+    // }
 
-    fetchData()
+    // fetchData()
   }, [])
 
   return (
