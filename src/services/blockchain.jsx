@@ -9,7 +9,6 @@ const ContractAbi = abi.abi
 let tx
 
 const toWei = (num) => ethers.utils.parseEther(num.toString())
-
 const fromWei = (num) => ethers.utils.formatEther(num)
 
 const getEthereumContract = async () => {
@@ -35,7 +34,6 @@ const isWalletConnected = async () => {
     if (accounts.length) {
       setGlobalState('connectedAccount', accounts[0])
     } else {
-      // reportError('Please connect wallet.')
       console.log('No accounts found.')
     }
 
@@ -97,7 +95,7 @@ const createGame = async ({
         }
       )
       await tx.wait()
-      await getGames()
+      await getMyGames()
       resolve(tx)
     } catch (error) {
       reportError(error)
@@ -123,7 +121,7 @@ const invitePlayer = async (player, gameId) => {
 
 const acceptInvitation = async (gameId, stake) => {
   if (!ethereum) return alert('Please install Metamask')
-
+  
   return new Promise(async (resolve, reject) => {
     try {
       const contract = await getEthereumContract()
@@ -131,6 +129,7 @@ const acceptInvitation = async (gameId, stake) => {
         value: toWei(stake),
       })
       await tx.wait()
+      await getInvitations()
       resolve(tx)
     } catch (err) {
       reportError(err)
@@ -277,9 +276,11 @@ const structuredPlayersScore = (playersScore) =>
 
 const structuredInvitations = (invitations) =>
   invitations.map((invitation) => ({
+    gameId: invitation.gameId.toNumber(),
     account: invitation.account.toLowerCase(),
     responded: invitation.responded,
     title: invitation.title,
+    stake: fromWei(invitation.stake),
   }))
 
 export {
