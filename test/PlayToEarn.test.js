@@ -6,12 +6,12 @@ describe('Contracts', () => {
   let contract, result
 
   const desc = "showcase your speed in a game",
-    title = 'Game title',
+    title = "Game title",
     participants = 4,
     numberOfWinners = 1,
     challenges = 5,
-    startDate = Math.floor(Date.now()),
-    endDate = Math.floor(Date.now()) + (60 * 60 * 24 * 10);
+    startDate = 1691757204686,
+    endDate = 1691761043971
 
   beforeEach(async () => {
     const Contract = await ethers.getContractFactory('PlayToEarn')
@@ -31,6 +31,7 @@ describe('Contracts', () => {
      it('should confirm fetching games', async () => {
         result = await contract.getGames()
         expect(result).to.have.lengthOf(1)
+
      })
 
      it('should confirm fetching a single game', async () => {
@@ -52,13 +53,19 @@ describe('Contracts', () => {
        await contract.connect(user1).acceptInvitation(1,{
          value: toWei(0.05)
        })
+
+       result = await contract.connect(user1).getMyGames();
+       expect(result).to.have.lengthOf(1);
+
        result = await contract.isPlayerListed(1,user1.address)
        expect(result).to.be.true
 
        await contract.connect(user2).rejectInvitation(1)
        result = await contract.isPlayerListed(1, user2.address);
        expect(result).to.be.false
+
     });
+
 
   })
 
