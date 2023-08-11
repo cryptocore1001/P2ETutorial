@@ -214,48 +214,58 @@ const getGame = async (id) => {
 }
 
 const getInvitations = async () => {
-  if (!ethereum) return alert('Please install Metamask')
-  const contract = await getEthereumContract()
-  const invitations = await contract.getInvitations()
-  setGlobalState('invitations', structuredInvitations(invitations))
+  try {
+    if (!ethereum) return alert('Please install Metamask')
+    const contract = await getEthereumContract()
+    const invitations = await contract.getInvitations()
+    setGlobalState('invitations', structuredInvitations(invitations))
+    setGlobalState('game', structuredGames([game])[0])
+  } catch (err) {
+    reportError(err)
+  }
 }
 
 const getScores = async (gameId) => {
-  if (!ethereum) return alert('Please install Metamask')
-  const contract = await getEthereumContract()
-  const scores = await contract.getScores(gameId)
-  setGlobalState('scores', structuredPlayersScore(scores))
+  try {
+    if (!ethereum) return alert('Please install Metamask')
+    const contract = await getEthereumContract()
+    const scores = await contract.getScores(gameId)
+    setGlobalState('scores', structuredPlayersScore(scores))
+  } catch (err) {
+    reportError(err)
+  }
 }
 
 const getMyGames = async () => {
   try {
-    if (!ethereum) return alert("Please install Metamask");
-    const contract = await getEthereumContract();
-    const games = await contract.getMyGames();
-    setGlobalState("myGames", structuredGames(games));
+    if (!ethereum) return alert('Please install Metamask')
+    const contract = await getEthereumContract()
+    const games = await contract.getMyGames()
+    setGlobalState('myGames', structuredGames(games))
   } catch (err) {
-    reportError(err);
+    reportError(err)
   }
 }
 
 const structuredGames = (games) =>
-  games.map((game) => ({
-    id: game.id.toNumber(),
-    title: game.title,
-    description: game.description,
-    owner: game.owner.toLowerCase(),
-    participants: game.participants.toNumber(),
-    numberOfWinners: game.numberOfWinners.toNumber(),
-    plays: game.plays.toNumber(),
-    acceptees: game.acceptees.toNumber(),
-    stake: fromWei(game.stake),
-    startDate: game.startDate.toNumber(),
-    endDate: game.endDate.toNumber(),
-    timestamp: game.timestamp.toNumber(),
-    deleted: game.deleted,
-    paidOut: game.paidOut,
-  }))
-  .sort((a, b) => b.timestamp - a.timestamp)
+  games
+    .map((game) => ({
+      id: game.id.toNumber(),
+      title: game.title,
+      description: game.description,
+      owner: game.owner.toLowerCase(),
+      participants: game.participants.toNumber(),
+      numberOfWinners: game.numberOfWinners.toNumber(),
+      plays: game.plays.toNumber(),
+      acceptees: game.acceptees.toNumber(),
+      stake: fromWei(game.stake),
+      startDate: game.startDate.toNumber(),
+      endDate: game.endDate.toNumber(),
+      timestamp: game.timestamp.toNumber(),
+      deleted: game.deleted,
+      paidOut: game.paidOut,
+    }))
+    .sort((a, b) => b.timestamp - a.timestamp)
 
 const structuredPlayersScore = (playersScore) =>
   playersScore.map((playerScore) => ({
