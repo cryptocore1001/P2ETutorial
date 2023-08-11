@@ -1,5 +1,5 @@
 import { getGlobalState, setGlobalState } from '../store'
-import abi from "../abis/src/contracts/PlayToEarn.sol/PlayToEarnt.json";
+import abi from "../abis/src/contracts/PlayToEarn.sol/PlayToEarn.json";
 import address from '../abis/contractAddress.json'
 import { ethers } from 'ethers'
 
@@ -9,6 +9,7 @@ const ContractAbi = abi.abi
 let tx
 
 const toWei = (num) => ethers.utils.parseEther(num.toString())
+
 const fromWei = (num) => ethers.utils.formatEther(num)
 
 const getEthereumContract = async () => {
@@ -34,7 +35,7 @@ const isWalletConnected = async () => {
     if (accounts.length) {
       setGlobalState('connectedAccount', accounts[0])
     } else {
-      reportError('Please connect wallet.')
+      // reportError('Please connect wallet.')
       console.log('No accounts found.')
     }
 
@@ -44,7 +45,7 @@ const isWalletConnected = async () => {
 
     window.ethereum.on('accountsChanged', async () => {
       setGlobalState('connectedAccount', accounts[0])
-      await getMyNfts()
+      // await getMyNfts()
       await isWalletConnected()
     })
 
@@ -70,21 +71,31 @@ const connectWallet = async () => {
 }
 
 const createGame = async ({
+  title,
   description,
   participants,
-  numOfWinners,
-  startDate,
-  endDate,
-  stakes,
+  winners,
+  challenges,
+  starts,
+  ends,
+  stake,
 }) => {
   if (!ethereum) return alert("Please install Metamask");
-
   return new Promise(async (resolve, reject) => {
     try {
       const contract = await getEthereumContract();
-      tx = await contract.createGame(description,participants,numOfWinners,startDate,endDate, {
-        value: toWei(stakes),
-      });
+      tx = await contract.createGame(
+        title,
+        description,
+        participants,
+        winners,
+        challenges,
+        starts,
+        ends,
+        {
+          value: toWei(stake),
+        }
+      );
       await tx.wait()
       await getGames()
       resolve(tx)

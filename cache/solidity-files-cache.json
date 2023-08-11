@@ -1,15 +1,9 @@
 {
   "_format": "hh-sol-cache-2",
   "files": {
-<<<<<<< HEAD
     "C:\\Users\\DELL\\Desktop\\DAPPMENTORS\\P2E\\src\\contracts\\PlayToEarn.sol": {
-      "lastModificationDate": 1691612587218,
-      "contentHash": "ed3ca1f342c7021e6b967f221633d6eb",
-=======
-    "/workspace/P2E/src/contracts/PlayToEarn.sol": {
-      "lastModificationDate": 1691674669848,
-      "contentHash": "183d542939324f518e9f02070dddb45b",
->>>>>>> 8096ea41e07a2821416e4db6f225db9fa2dc3456
+      "lastModificationDate": 1691675864775,
+      "contentHash": "eaed1dda46ef5aeafc67642d46d97b8b",
       "sourceName": "src/contracts/PlayToEarn.sol",
       "solcConfig": {
         "version": "0.8.11",
@@ -44,76 +38,6 @@
       ],
       "artifacts": [
         "PlayToEarn"
-      ]
-    },
-    "C:\\Users\\DELL\\Desktop\\DAPPMENTORS\\P2E\\node_modules\\@openzeppelin\\contracts\\utils\\Counters.sol": {
-      "lastModificationDate": 1688391544707,
-      "contentHash": "74654e3ae5d7f39555055dfe244dab7a",
-      "sourceName": "@openzeppelin/contracts/utils/Counters.sol",
-      "solcConfig": {
-        "version": "0.8.11",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "Counters"
-      ]
-    },
-    "C:\\Users\\DELL\\Desktop\\DAPPMENTORS\\P2E\\node_modules\\@openzeppelin\\contracts\\security\\ReentrancyGuard.sol": {
-      "lastModificationDate": 1688391560279,
-      "contentHash": "1535f8c0c68463f8c1b5239f7584e71f",
-      "sourceName": "@openzeppelin/contracts/security/ReentrancyGuard.sol",
-      "solcConfig": {
-        "version": "0.8.11",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "ReentrancyGuard"
       ]
     },
     "C:\\Users\\DELL\\Desktop\\DAPPMENTORS\\P2E\\node_modules\\@openzeppelin\\contracts\\access\\Ownable.sol": {
@@ -151,6 +75,76 @@
       ],
       "artifacts": [
         "Ownable"
+      ]
+    },
+    "C:\\Users\\DELL\\Desktop\\DAPPMENTORS\\P2E\\node_modules\\@openzeppelin\\contracts\\security\\ReentrancyGuard.sol": {
+      "lastModificationDate": 1688391560279,
+      "contentHash": "1535f8c0c68463f8c1b5239f7584e71f",
+      "sourceName": "@openzeppelin/contracts/security/ReentrancyGuard.sol",
+      "solcConfig": {
+        "version": "0.8.11",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "ReentrancyGuard"
+      ]
+    },
+    "C:\\Users\\DELL\\Desktop\\DAPPMENTORS\\P2E\\node_modules\\@openzeppelin\\contracts\\utils\\Counters.sol": {
+      "lastModificationDate": 1688391544707,
+      "contentHash": "74654e3ae5d7f39555055dfe244dab7a",
+      "sourceName": "@openzeppelin/contracts/utils/Counters.sol",
+      "solcConfig": {
+        "version": "0.8.11",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "Counters"
       ]
     },
     "C:\\Users\\DELL\\Desktop\\DAPPMENTORS\\P2E\\node_modules\\@openzeppelin\\contracts\\utils\\Context.sol": {

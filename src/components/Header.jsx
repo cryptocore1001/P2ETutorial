@@ -19,10 +19,16 @@ const Header = () => {
           <Link to={'/invitations'} className="text-md">
             Invitations
           </Link>
-          <button className="bg-blue-700 text-white py-2 px-3 md:py-2 md:px-5 rounded-full
-          hover:bg-blue-600 duration-200 transition-all shadow-md shadow-black">
-            Connect Wallet
-          </button>
+          {connectedAccount ? (
+              <button className="bg-blue-700 text-white py-2 px-5 rounded-full hover:bg-blue-600 duration-200 transition-all">
+                {truncate(connectedAccount,4,4,11)}
+              </button>
+            ) : (
+              <button className="bg-blue-700 text-white py-2 px-5 rounded-full hover:bg-blue-600 duration-200 transition-all"
+              onClick={connectWallet}>
+                Connect Wallet
+              </button>
+            )}
         </div>
       </main>
     </header>

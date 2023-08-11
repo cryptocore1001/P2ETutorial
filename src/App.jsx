@@ -4,8 +4,15 @@ import Home from './pages/Home'
 import MyGames from './pages/MyGames'
 import Invitations from './pages/Invitations'
 import { ToastContainer } from 'react-toastify'
+import { isWalletConnected } from './services/blockchain'
+import { useEffect } from 'react'
 
 const App = () => {
+
+  useEffect(()=> {
+    isWalletConnected()
+  },[])
+
   return (
     <div className="bg-gray-100 min-h-screen">
       <Routes>
