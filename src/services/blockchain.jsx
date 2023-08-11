@@ -9,6 +9,7 @@ const ContractAbi = abi.abi
 let tx
 
 const toWei = (num) => ethers.utils.parseEther(num.toString())
+
 const fromWei = (num) => ethers.utils.formatEther(num)
 
 const getEthereumContract = async () => {
@@ -34,7 +35,7 @@ const isWalletConnected = async () => {
     if (accounts.length) {
       setGlobalState('connectedAccount', accounts[0])
     } else {
-      reportError('Please connect wallet.')
+      // reportError('Please connect wallet.')
       console.log('No accounts found.')
     }
 
@@ -44,7 +45,7 @@ const isWalletConnected = async () => {
 
     window.ethereum.on('accountsChanged', async () => {
       setGlobalState('connectedAccount', accounts[0])
-      await getMyNfts()
+      // await getMyNfts()
       await isWalletConnected()
     })
 
@@ -70,59 +71,121 @@ const connectWallet = async () => {
 }
 
 const createGame = async ({
+  title,
   description,
   participants,
-  numOfWinners,
-  startDate,
-  endDate,
-  stakes,
+  winners,
+  challenges,
+  starts,
+  ends,
+  stake,
 }) => {
-  try {
-    if (!ethereum) return alert("Please install Metamask");
-    const contract = await getEthereumContract();
-    tx = await contract.createGame(description,participants,numOfWinners,startDate,endDate, {
-      value: toWei(stakes),
-    });
-    await tx.wait()
-  } catch (error) {
-    reportError(error);
-  }
+  if (!ethereum) return alert("Please install Metamask");
+  return new Promise(async (resolve, reject) => {
+    try {
+      const contract = await getEthereumContract();
+      tx = await contract.createGame(
+        title,
+        description,
+        participants,
+        winners,
+        challenges,
+        starts,
+        ends,
+        {
+          value: toWei(stake),
+        }
+      );
+      await tx.wait()
+      await getGames()
+      resolve(tx)
+    } catch (error) {
+      reportError(error);
+      reject(error)
+    }
+  })
 };
 
 const invitePlayer = async (player, gameId) => {
-  try {
-    if (!ethereum) return alert("Please install Metamask")
-    const contract = await getEthereumContract()
-    tx = await contract.invitePlayer(player, gameId)
-    await tx.wait()
-  } catch (err) {
-    reportError(err)
-  }
+  if (!ethereum) return alert("Please install Metamask")
+  return new Promise(async (resolve, reject) => {
+    try {
+      const contract = await getEthereumContract()
+      tx = await contract.invitePlayer(player, gameId)
+      await tx.wait()
+      resolve(tx)
+    } catch (err) {
+      reportError(err)
+      reject(err)
+    }
+  })
 }
 
 const acceptInvitation = async (gameId, stake) => {
-  try {
-    if (!ethereum) return alert("Please install Metamask")
-    const contract = await getEthereumContract()
-    tx = await contract.acceptInvitation(gameId, {
-      value: toWei(stake)
-    })
-    await tx.wait()
-  } catch (err) {
-    reportError(err)
-  }
+  if (!ethereum) return alert("Please install Metamask")
+
+  return new Promise(async (resolve, reject) => {
+    try {
+      const contract = await getEthereumContract()
+      tx = await contract.acceptInvitation(gameId, {
+        value: toWei(stake)
+      })
+      await tx.wait()
+      resolve(tx)
+    } catch (err) {
+      reportError(err)
+      reject(err)
+    }
+  })
 }
 
 const rejectInvitation = async (gameId) => {
-  try {
-    if (!ethereum) return alert("Please install Metamask");
-    const contract = await getEthereumContract();
-    tx = await contract.rejectInvitation(gameId);
-    await tx.wait();
-  } catch (err) {
-    reportError(err);
-  }
+  if (!ethereum) return alert("Please install Metamask");
+
+  return new Promise(async (resolve, reject) => {
+    try {
+      const contract = await getEthereumContract();
+      tx = await contract.rejectInvitation(gameId);
+      await tx.wait();
+      resolve(tx)
+    } catch (err) {
+      reportError(err)
+      reject(err)
+    }
+  })
 };
+
+const recordScore = async (gameId, score) => {
+  if (!ethereum) return alert("Please install Metamask");
+
+  return new Promise(async (resolve, reject) => {
+    try {
+      const contract = await getEthereumContract();
+      tx = await contract.recordScore(gameId, score);
+      await tx.wait();
+      resolve(tx);
+    } catch (err) {
+      reportError(err);
+      reject(err);
+    }
+  });
+}
+
+const payout = async (gameId) => {
+  if(!ethereum) return alert('Please install metamask')
+
+   return new Promise(async (resolve, reject) => {
+    try {
+      const contract = await getEthereumContract()
+      tx = await contract.payout(gameId)
+      await tx.wait()
+      resolve(tx)
+    } catch (err) {
+      reportError(err)
+      reject(err)
+    }
+   })
+}
 
 const getGames = async () => {
   try {
@@ -153,6 +216,13 @@ const getInvitations = async () => {
   setGlobalState('invitations', structuredInvitations(invitations))
 }
 
+const getScores = async (gameId) => {
+  if (!ethereum) return alert("Please install Metamask")
+  const contract = await getEthereumContract()
+  const scores = await contract.getScores(gameId);
+  setGlobalState("scores", structuredPlayersScore(scores));
+}
+
 const structuredGames = (games) =>
   games.map((game) => ({
     id: game.id.toNumber(),
@@ -170,13 +240,31 @@ const structuredGames = (games) =>
     paidOut: game.paidOut,
   }));
 
+const structuredPlayersScore = (playersScore) => 
+    playersScore.map((playerScore) => ({
+      gameId: playerScore.id.toNumber(),
+      player: playerScore.player.toLowerCase(),
+      score: playerScore.score.toNumber(),
+      bool: playerScore.played
+    }))
+
  const structuredInvitations = (invitations) => 
-  invitations.map((invitation) => ({
-    account: invitation.account.toLowerCase(),
-    responded: invitation.responded
-  })) 
+    invitations.map((invitation) => ({
+      account: invitation.account.toLowerCase(),
+      responded: invitation.responded
+    })) 
 
 export {
   connectWallet,
   isWalletConnected,
-}
+  createGame,
+  invitePlayer,
+  acceptInvitation,
+  rejectInvitation,
+  recordScore,
+  payout,
+  getGames,
+  getGame,
+  getInvitations,
+  getScores,
+};

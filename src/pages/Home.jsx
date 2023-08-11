@@ -1,3 +1,4 @@
+
 import React from 'react'
 import { Header, Hero, CreateGame } from '../components'
 
@@ -6,6 +7,7 @@ const Home = () => {
     <div>
       <Header />
       <Hero />
+
       <CreateGame />
     </div>
   )

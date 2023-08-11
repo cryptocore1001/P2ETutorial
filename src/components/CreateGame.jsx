@@ -1,18 +1,21 @@
 import React, { useState } from 'react'
 import { FaTimes } from 'react-icons/fa'
 import { setGlobalState, useGlobalState } from '../store'
+import { createGame } from '../services/blockchain'
+import { toast } from 'react-toastify'
 
 const CreateGame = () => {
   const [createModal] = useGlobalState('createModal')
 
   const [game, setGame] = useState({
     title: '',
+    description: '',
     participants: '',
     winners: '',
     challenges: '',
     starts: '',
     ends: '',
-    description: '',
+    stake: '',
   })
 
   const handleChange = (e) => {
@@ -33,7 +36,32 @@ const CreateGame = () => {
       starts: '',
       ends: '',
       description: '',
+      stake: '',
     })
+  }
+
+  const handleGameCreation = async (e) => {
+    e.preventDefault()
+
+    console.log(
+      game.title+' '+game.description+' '+game.participants+' '+game.winners+' '+game.stake+' '+game.starts+' '+game.ends+' '+game.challenges
+    )
+    await toast.promise(new Promise(async (resolve, reject) => {
+        await createGame(game)
+        .then((tx)=>{
+          console.log(tx)
+          resolve(tx)
+          closeModal()
+        })
+        .catch((err)=>{
+          reject(err)
+        })
+    }), 
+    {
+      pending: "Approve transaction...",
+      success: "Game creation successful 👌",
+      error: "Encountered error 🤯",
+    });
   }
 
   return (
@@ -53,13 +81,17 @@ const CreateGame = () => {
             </button>
           </div>
 
-          <form className="flex flex-col justify-center items-start rounded-xl mt-5 mb-5">
+          <form
+            className="flex flex-col justify-center items-start rounded-xl mt-5 mb-5"
+            onSubmit={handleGameCreation}
+          >
             <label className="text-[12px]">Title</label>
-            <div className="py-4 w-full border border-[#212D4A] rounded-full flex items-center px-4 mb-3 mt-2">
+            <div className="py-2 w-full border border-[#212D4A] rounded-full flex items-center px-4 mb-3 mt-2">
               <input
                 placeholder="Title"
-                className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm"
+                className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm border-none focus:outline-none focus:ring-0 py-0"
                 name="title"
+                type="text"
                 value={game.title}
                 onChange={handleChange}
                 required
@@ -67,12 +99,13 @@ const CreateGame = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row justify-between items-center w-full space-x-2 my-3">
-              <div className='w-full'>
+              <div className="w-full">
                 <label className="text-[12px]">Participants</label>
-                <div className="py-4 w-full border border-[#212D4A] rounded-full flex items-center px-4">
+                <div className="py-2 w-full border border-[#212D4A] rounded-full flex items-center px-4">
                   <input
                     placeholder="E.g 9"
-                    className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm"
+                    type="number"
+                    className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm border-none focus:outline-none focus:ring-0 py-0"
                     name="participants"
                     value={game.participants}
                     onChange={handleChange}
@@ -81,12 +114,13 @@ const CreateGame = () => {
                 </div>
               </div>
 
-              <div className='w-full'>
+              <div className="w-full">
                 <label className="text-[12px]">Number of Winners</label>
-                <div className="py-4 w-full border border-[#212D4A] rounded-full flex items-center px-4">
+                <div className="py-2 w-full border border-[#212D4A] rounded-full flex items-center px-4">
                   <input
                     placeholder="E.g 2"
-                    className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm"
+                    type="number"
+                    className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm border-none focus:outline-none focus:ring-0 py-0"
                     name="winners"
                     value={game.winners}
                     onChange={handleChange}
@@ -95,38 +129,56 @@ const CreateGame = () => {
                 </div>
               </div>
 
-              <div className='w-full'>
+              <div className="w-full">
                 <label className="text-[12px]">Number of challenges</label>
-                <div className="py-4 w-full border border-[#212D4A] rounded-full flex items-center px-4">
+                <div className="py-2 w-full border border-[#212D4A] rounded-full flex items-center px-4">
                   <input
                     placeholder="E.g 2"
-                    className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm"
+                    type="number"
+                    className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm border-none focus:outline-none focus:ring-0 py-0"
                     name="challenges"
-                    value={game.winners}
+                    value={game.challenges}
                     onChange={handleChange}
                     required
                   />
                 </div>
               </div>
             </div>
+            <div className="w-full">
+              <label className="text-[12px]">Stake amount</label>
+              <div className="py-2 w-full border border-[#212D4A] rounded-full flex items-center px-4 mb-3 mt-2">
+                <input
+                  placeholder="eg 0.04"
+                  className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm border-none focus:outline-none focus:ring-0 py-0"
+                  name="stake"
+                  value={game.stake}
+                  type="number"
+                  onChange={handleChange}
+                  step={0.0001}
+                  required
+                />
+              </div>
+            </div>
 
             <label className="text-[12px]">Starts On</label>
-            <div className="py-4 w-full border border-[#212D4A] rounded-full flex items-center px-4 mb-3 mt-2">
+            <div className="py-2 w-full border border-[#212D4A] rounded-full flex items-center px-4 mb-3 mt-2">
               <input
                 placeholder="Start Date"
-                className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm"
-                name="winners"
+                className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm border-none focus:outline-none focus:ring-0 py-0"
+                name="starts"
+                type="text"
                 value={game.starts}
                 onChange={handleChange}
                 required
               />
             </div>
             <label className="text-[12px]">Ends On</label>
-            <div className="py-4 w-full border border-[#212D4A] rounded-full flex items-center px-4 mb-3 mt-2">
+            <div className="py-2 w-full border border-[#212D4A] rounded-full flex items-center px-4 mb-3 mt-2">
               <input
                 placeholder="End Date"
-                className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm"
-                name="winners"
+                className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm border-none focus:outline-none focus:ring-0 py-0"
+                name="ends"
+                type='text'
                 value={game.ends}
                 onChange={handleChange}
                 required
@@ -137,7 +189,7 @@ const CreateGame = () => {
 
             <textarea
               placeholder="What is this game about?"
-              className="h-[80px] w-full bg-transparent border border-[#212D4A] rounded-xl py-3 px-3
+              className="h-[70px] w-full bg-transparent border border-[#212D4A] rounded-xl py-3 px-3
               focus:outline-none focus:ring-0 resize-none
               placeholder-[#3D3857] text-sm"
               name="description"
@@ -157,7 +209,7 @@ const CreateGame = () => {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default CreateGame

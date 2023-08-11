@@ -40,7 +40,7 @@ const Header = () => {
         </div>
       </main>
     </header>
-  )
+  );
 }
 
 export default Header
