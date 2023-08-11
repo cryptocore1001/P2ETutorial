@@ -90,7 +90,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         totalGame.increment();
         uint gameId = totalGame.current();
 
-        bool isCreated = _saveGame(gameId, title, description, participants, numberOfWinners, challenges, startDate);
+        bool isCreated = _saveGame(gameId, title, description, participants, numberOfWinners, challenges, startDate, endDate);
         require(isCreated, "Game creation failed");
 
         isCreated = _savePlayer(gameId);
@@ -284,6 +284,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         uint participants,
         uint numberOfWinners,
         uint challenges,
+        uint startDate,
         uint endDate
     ) internal returns (bool) {
 
@@ -297,6 +298,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         gameData.acceptees =  1;
         gameData.stake =  msg.value;
         gameData.numberOfWinners =  numberOfWinners;
+        gameData.startDate =  startDate;
         gameData.endDate =  endDate;
         gameData.timestamp =  currentTime();
 
