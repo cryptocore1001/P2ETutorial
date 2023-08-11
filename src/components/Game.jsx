@@ -2,7 +2,7 @@ import { EmojtCha } from 'emojtcha-react'
 import { useState, useEffect } from 'react'
 import ChatButton from './ChatButton'
 
-export default function Game() {
+export default function Game({ id }) {
   const numEmojtChas = 5
 
   const [validationStates, setValidationStates] = useState(
@@ -73,7 +73,7 @@ export default function Game() {
         ))}
 
       {!timerStarted && (
-        <div className='flex justify-center items-center space-x-2'>
+        <div className="flex justify-center items-center space-x-2">
           <button
             className="bg-blue-700 text-white py-2 px-4 rounded
           hover:bg-blue-600 duration-200 transition-all shadow-md shadow-black"
@@ -82,7 +82,7 @@ export default function Game() {
             Play Game
           </button>
 
-          <ChatButton />
+          <ChatButton gid={id} />
         </div>
       )}
 

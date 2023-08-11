@@ -1,12 +1,15 @@
 import React from 'react'
 import { Header, Game, Chat } from '../components'
+import { useParams } from 'react-router-dom'
 
 const GamePlay = () => {
+  const {id} = useParams()
+
   return (
     <div>
       <Header />
-      <Game />
-      <Chat />
+      <Game id={id} />
+      <Chat gid={id} />
     </div>
   )
 }

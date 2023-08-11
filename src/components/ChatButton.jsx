@@ -7,13 +7,15 @@ import { AiFillLock } from 'react-icons/ai'
 import { Menu } from '@headlessui/react'
 import { toast } from 'react-toastify'
 import {
+  createNewGroup,
+  joinGroup,
   logOutWithCometChat,
   loginWithCometChat,
   signUpWithCometChat,
 } from '../services/chat'
 import { setGlobalState, useGlobalState } from '../store'
 
-const ChatButton = () => {
+const ChatButton = ({ gid }) => {
   const [connectedAccount] = useGlobalState('connectedAccount')
   const [currentUser] = useGlobalState('currentUser')
 
@@ -77,6 +79,50 @@ const ChatButton = () => {
     )
   }
 
+  const handleCreateGroup = async () => {
+    await toast.promise(
+      new Promise(async (resolve, reject) => {
+        await createNewGroup(`guid_${gid}`, 'game.title')
+          .then((group) => {
+            setGlobalState('group', group)
+            resolve(group)
+            window.location.reload()
+          })
+          .catch((error) => {
+            alert(JSON.stringify(error))
+            reject(error)
+          })
+      }),
+      {
+        pending: 'Creating group...',
+        success: 'Group created successfully 👌',
+        error: 'Encountered error 🤯',
+      }
+    )
+  }
+
+  const handleJoinGroup = async () => {
+    await toast.promise(
+      new Promise(async (resolve, reject) => {
+        await joinGroup(`guid_${gid}`)
+          .then((group) => {
+            setGlobalState('group', group)
+            resolve()
+            window.location.reload()
+          })
+          .catch((error) => {
+            alert(JSON.stringify(error))
+            reject(error)
+          })
+      }),
+      {
+        pending: 'Joining group...',
+        success: 'Group joined successfully 👌',
+        error: 'Encountered error 🤯',
+      }
+    )
+  }
+
   return (
     <Menu className="relative" as="div">
       <Menu.Button
@@ -96,27 +142,15 @@ const ChatButton = () => {
           <>
             <Menu.Item>
               {({ active }) => (
-                <>
-                  <button
-                    className={`flex justify-start items-center space-x-1 ${
-                      active ? 'bg-gray-200 text-black' : 'text-gray-900'
-                    } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                    onClick={() => setGlobalState('chatModal', 'scale-100')}
-                  >
-                    <FiUsers size={17} />
-                    <span>Recent Chats</span>
-                  </button>
-                  
-                  <button
-                    className={`flex justify-start items-center space-x-1 ${
-                      active ? 'bg-gray-200 text-black' : 'text-blue-500'
-                    } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                    onClick={handleSignUp}
-                  >
-                    <AiFillLock size={17} />
-                    <span>Sign Up</span>
-                  </button>
-                </>
+                <button
+                  className={`flex justify-start items-center space-x-1 ${
+                    active ? 'bg-gray-200 text-black' : 'text-blue-500'
+                  } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                  onClick={handleSignUp}
+                >
+                  <AiFillLock size={17} />
+                  <span>Sign Up</span>
+                </button>
               )}
             </Menu.Item>
             <Menu.Item>
@@ -141,7 +175,7 @@ const ChatButton = () => {
                   className={`flex justify-start items-center space-x-1 ${
                     active ? 'bg-gray-200 text-black' : 'text-gray-900'
                   } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                  onClick={() => setGlobalState('chatListModal', 'scale-100')}
+                  onClick={() => setGlobalState('chatModal', 'scale-100')}
                 >
                   <FiUsers size={17} />
                   <span>Recent Chats</span>
