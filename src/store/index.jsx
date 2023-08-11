@@ -7,6 +7,7 @@ const { setGlobalState, useGlobalState, getGlobalState } = createGlobalState({
   chatModal: 'scale-0',
   games: [],
   game: null,
+  messages: [],
   invitations: [],
   scores: [],
 })

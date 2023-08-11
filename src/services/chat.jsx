@@ -65,10 +65,10 @@ const checkAuthState = async () => {
   })
 }
 
-const getMessages = async (UID) => {
+const getMessages = async (GUID) => {
   const limit = 30
   const messagesRequest = new CometChat.MessagesRequestBuilder()
-    .setUID(UID)
+    .setGUID(GUID)
     .setLimit(limit)
     .build()
 
@@ -95,7 +95,7 @@ const getConversations = async () => {
 }
 
 const sendMessage = async (receiverID, messageText) => {
-  const receiverType = CometChat.RECEIVER_TYPE.USER
+  const receiverType = CometChat.RECEIVER_TYPE.GROUP
   const textMessage = new CometChat.TextMessage(
     receiverID,
     messageText,
@@ -119,6 +119,37 @@ const listenForMessage = async (listenerID) => {
   })
 }
 
+const createNewGroup = async (GUID, groupName) => {
+  const groupType = CometChat.GROUP_TYPE.PUBLIC
+  const password = ''
+  const group = new CometChat.Group(GUID, groupName, groupType, password)
+
+  return new Promise(async (resolve, reject) => {
+    await CometChat.createGroup(group)
+      .then((group) => resolve(group))
+      .catch((error) => reject(error))
+  })
+}
+
+const getGroup = async (GUID) => {
+  return new Promise(async (resolve, reject) => {
+    await CometChat.getGroup(GUID)
+      .then((group) => resolve(group))
+      .catch((error) => reject(error))
+  })
+}
+
+const joinGroup = async (GUID) => {
+  const groupType = CometChat.GROUP_TYPE.PUBLIC
+  const password = ''
+
+  return new Promise(async (resolve, reject) => {
+    await CometChat.joinGroup(GUID, groupType, password)
+      .then((group) => resolve(group))
+      .catch((error) => reject(error))
+  })
+}
+
 export {
   initCometChat,
   loginWithCometChat,
@@ -129,4 +160,7 @@ export {
   checkAuthState,
   listenForMessage,
   getConversations,
+  createNewGroup,
+  getGroup,
+  joinGroup,
 }
