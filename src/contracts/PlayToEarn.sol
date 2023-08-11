@@ -36,9 +36,11 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
     }
 
     struct InvitationStruct {
+        uint gameId;
         address account;
         bool responded;
         string title;
+        uint stake;
     }
 
     struct PlayerScoreSheetStruct {
@@ -140,9 +142,11 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         );
 
         invitationsOf[playerAccount][gameId] = InvitationStruct({
+            gameId: gameId,
             account: playerAccount,
             responded: false,
-            title: games[gameId].title
+            title: games[gameId].title,
+            stake: games[gameId].stake
         });
     }
 
@@ -189,15 +193,20 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         uint totalInvitations;
 
         for (uint i = 1; i <= totalGame.current(); i++) {
-            if (invitationsOf[msg.sender][i].account == msg.sender)
-                totalInvitations++;
+            if (
+                invitationsOf[msg.sender][i].account == msg.sender &&
+                !invitationsOf[msg.sender][i].responded
+            ) totalInvitations++;
         }
 
         Invitations = new InvitationStruct[](totalInvitations);
         uint index;
 
         for (uint i = 1; i <= totalGame.current(); i++) {
-            if (invitationsOf[msg.sender][i].account == msg.sender) {
+            if (
+                invitationsOf[msg.sender][i].account == msg.sender &&
+                !invitationsOf[msg.sender][i].responded
+            ) {
                 Invitations[index++] = invitationsOf[msg.sender][i];
             }
         }
