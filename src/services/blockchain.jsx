@@ -1,5 +1,5 @@
 import { getGlobalState, setGlobalState } from '../store'
-import abi from '../abis/src/contracts/DappBreed.sol/DappBreed.json'
+import abi from '../abis/src/contracts/PlayToEarn.sol/PlayToEarn.json'
 import address from '../abis/contractAddress.json'
 import { ethers } from 'ethers'
 
