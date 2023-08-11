@@ -7,13 +7,15 @@ import { AiFillLock } from 'react-icons/ai'
 import { Menu } from '@headlessui/react'
 import { toast } from 'react-toastify'
 import {
+  createNewGroup,
+  joinGroup,
   logOutWithCometChat,
   loginWithCometChat,
   signUpWithCometChat,
 } from '../services/chat'
 import { setGlobalState, useGlobalState } from '../store'
 
-const ChatButton = () => {
+const ChatButton = ({ gid }) => {
   const [connectedAccount] = useGlobalState('connectedAccount')
   const [currentUser] = useGlobalState('currentUser')
 
@@ -72,6 +74,50 @@ const ChatButton = () => {
       {
         pending: 'Leaving...',
         success: 'Logged out successfully 👌',
+        error: 'Encountered error 🤯',
+      }
+    )
+  }
+
+  const handleCreateGroup = async () => {
+    await toast.promise(
+      new Promise(async (resolve, reject) => {
+        await createNewGroup(`guid_${gid}`, 'game.title')
+          .then((group) => {
+            setGlobalState('group', group)
+            resolve(group)
+            window.location.reload()
+          })
+          .catch((error) => {
+            alert(JSON.stringify(error))
+            reject(error)
+          })
+      }),
+      {
+        pending: 'Creating group...',
+        success: 'Group created successfully 👌',
+        error: 'Encountered error 🤯',
+      }
+    )
+  }
+
+  const handleJoinGroup = async () => {
+    await toast.promise(
+      new Promise(async (resolve, reject) => {
+        await joinGroup(`guid_${gid}`)
+          .then((group) => {
+            setGlobalState('group', group)
+            resolve()
+            window.location.reload()
+          })
+          .catch((error) => {
+            alert(JSON.stringify(error))
+            reject(error)
+          })
+      }),
+      {
+        pending: 'Joining group...',
+        success: 'Group joined successfully 👌',
         error: 'Encountered error 🤯',
       }
     )
