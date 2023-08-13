@@ -1,16 +1,32 @@
-import React from 'react'
-import { Header, Game, Chat } from '../components'
+import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { Header, Game, Chat } from '../components'
+import { getGame } from '../services/blockchain'
+import { useGlobalState } from '../store'
+import GameInfo from '../components/GameInfo'
 
 const GamePlay = () => {
-  const {id} = useParams()
+  const { id } = useParams()
+  const [game] = useGlobalState('game')
+  const [loaded, setLoaded] = useState(false)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await getGame(id)
+      setLoaded(true)
+    }
+
+    fetchData()
+  }, [id])
 
   return (
-    <div>
-      <Header />
-      <Game id={id} />
-      <Chat gid={id} />
-    </div>
+    loaded && (
+      <>
+        <Header />
+        <Game game={game} />
+        <Chat gid={id} />
+      </>
+    )
   )
 }
 
