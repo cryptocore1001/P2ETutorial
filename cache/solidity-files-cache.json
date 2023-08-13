@@ -1,9 +1,15 @@
 {
   "_format": "hh-sol-cache-2",
   "files": {
+<<<<<<< HEAD
     "C:\\Users\\DELL\\Desktop\\DAPPMENTORS\\P2E\\src\\contracts\\PlayToEarn.sol": {
       "lastModificationDate": 1691778430691,
       "contentHash": "f27748a11fe111d00dc091e758baa721",
+=======
+    "/Users/daltonic/Sites/p2e/src/contracts/PlayToEarn.sol": {
+      "lastModificationDate": 1691920184326,
+      "contentHash": "57445432812f264cf51d51fb3b76090e",
+>>>>>>> 2806dc2bd0bd541e183c02a0bcf10305f9ee020f
       "sourceName": "src/contracts/PlayToEarn.sol",
       "solcConfig": {
         "version": "0.8.11",

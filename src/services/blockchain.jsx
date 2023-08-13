@@ -9,7 +9,6 @@ const ContractAbi = abi.abi
 let tx
 
 const toWei = (num) => ethers.utils.parseEther(num.toString())
-
 const fromWei = (num) => ethers.utils.formatEther(num)
 
 const getEthereumContract = async () => {
@@ -35,7 +34,6 @@ const isWalletConnected = async () => {
     if (accounts.length) {
       setGlobalState('connectedAccount', accounts[0])
     } else {
-      // reportError('Please connect wallet.')
       console.log('No accounts found.')
     }
 
@@ -45,7 +43,7 @@ const isWalletConnected = async () => {
 
     window.ethereum.on('accountsChanged', async () => {
       setGlobalState('connectedAccount', accounts[0])
-      // await getMyNfts()
+      await loadData()
       await isWalletConnected()
     })
 
@@ -97,7 +95,7 @@ const createGame = async ({
         }
       )
       await tx.wait()
-      await getGames()
+      await getMyGames()
       resolve(tx)
     } catch (error) {
       reportError(error)
@@ -123,7 +121,7 @@ const invitePlayer = async (player, gameId) => {
 
 const acceptInvitation = async (gameId, stake) => {
   if (!ethereum) return alert('Please install Metamask')
-
+  
   return new Promise(async (resolve, reject) => {
     try {
       const contract = await getEthereumContract()
@@ -131,6 +129,7 @@ const acceptInvitation = async (gameId, stake) => {
         value: toWei(stake),
       })
       await tx.wait()
+      await getInvitations()
       resolve(tx)
     } catch (err) {
       reportError(err)
@@ -147,6 +146,7 @@ const rejectInvitation = async (gameId) => {
       const contract = await getEthereumContract()
       tx = await contract.rejectInvitation(gameId)
       await tx.wait()
+      await getInvitations()
       resolve(tx)
     } catch (err) {
       reportError(err)
@@ -189,6 +189,7 @@ const payout = async (gameId) => {
 
 const loadData = async () => {
   await getMyGames()
+  await getInvitations()
 }
 
 const getGames = async () => {
@@ -214,48 +215,57 @@ const getGame = async (id) => {
 }
 
 const getInvitations = async () => {
-  if (!ethereum) return alert('Please install Metamask')
-  const contract = await getEthereumContract()
-  const invitations = await contract.getInvitations()
-  setGlobalState('invitations', structuredInvitations(invitations))
+  try {
+    if (!ethereum) return alert('Please install Metamask')
+    const contract = await getEthereumContract()
+    const invitations = await contract.getInvitations()
+    setGlobalState('invitations', structuredInvitations(invitations))
+  } catch (err) {
+    reportError(err)
+  }
 }
 
 const getScores = async (gameId) => {
-  if (!ethereum) return alert('Please install Metamask')
-  const contract = await getEthereumContract()
-  const scores = await contract.getScores(gameId)
-  setGlobalState('scores', structuredPlayersScore(scores))
+  try {
+    if (!ethereum) return alert('Please install Metamask')
+    const contract = await getEthereumContract()
+    const scores = await contract.getScores(gameId)
+    setGlobalState('scores', structuredPlayersScore(scores))
+  } catch (err) {
+    reportError(err)
+  }
 }
 
 const getMyGames = async () => {
   try {
-    if (!ethereum) return alert("Please install Metamask");
-    const contract = await getEthereumContract();
-    const games = await contract.getMyGames();
-    setGlobalState("myGames", structuredGames(games));
+    if (!ethereum) return alert('Please install Metamask')
+    const contract = await getEthereumContract()
+    const games = await contract.getMyGames()
+    setGlobalState('myGames', structuredGames(games))
   } catch (err) {
-    reportError(err);
+    reportError(err)
   }
 }
 
 const structuredGames = (games) =>
-  games.map((game) => ({
-    id: game.id.toNumber(),
-    title: game.title,
-    description: game.description,
-    owner: game.owner.toLowerCase(),
-    participants: game.participants.toNumber(),
-    numberOfWinners: game.numberOfWinners.toNumber(),
-    plays: game.plays.toNumber(),
-    acceptees: game.acceptees.toNumber(),
-    stake: fromWei(game.stake),
-    startDate: game.startDate.toNumber(),
-    endDate: game.endDate.toNumber(),
-    timestamp: game.timestamp.toNumber(),
-    deleted: game.deleted,
-    paidOut: game.paidOut,
-  }))
-  .sort((a, b) => b.timestamp - a.timestamp)
+  games
+    .map((game) => ({
+      id: game.id.toNumber(),
+      title: game.title,
+      description: game.description,
+      owner: game.owner.toLowerCase(),
+      participants: game.participants.toNumber(),
+      numberOfWinners: game.numberOfWinners.toNumber(),
+      plays: game.plays.toNumber(),
+      acceptees: game.acceptees.toNumber(),
+      stake: fromWei(game.stake),
+      startDate: game.startDate.toNumber(),
+      endDate: game.endDate.toNumber(),
+      timestamp: game.timestamp.toNumber(),
+      deleted: game.deleted,
+      paidOut: game.paidOut,
+    }))
+    .sort((a, b) => b.timestamp - a.timestamp)
 
 const structuredPlayersScore = (playersScore) =>
   playersScore.map((playerScore) => ({
@@ -268,8 +278,12 @@ const structuredPlayersScore = (playersScore) =>
 
 const structuredInvitations = (invitations) =>
   invitations.map((invitation) => ({
+    gameId: invitation.gameId.toNumber(),
     account: invitation.account.toLowerCase(),
     responded: invitation.responded,
+    accepted: invitation.accepted,
+    title: invitation.title,
+    stake: fromWei(invitation.stake),
   }))
 
 export {

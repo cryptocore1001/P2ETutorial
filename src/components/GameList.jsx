@@ -5,9 +5,10 @@ import { Link } from 'react-router-dom'
 
 const GameList = ({ games }) => {
   const handleInviteClick = (game) => {
+    setGlobalState('game', game)
     setGlobalState('inviteModal', 'scale-100')
-    console.log(game)
   }
+
   return (
     <div className="w-3/5 mx-auto my-10">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

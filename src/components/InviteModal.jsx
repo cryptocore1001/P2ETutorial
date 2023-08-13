@@ -1,9 +1,36 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { FaTimes } from 'react-icons/fa'
 import { setGlobalState, useGlobalState } from '../store'
+import { toast } from 'react-toastify'
+import { invitePlayer } from '../services/blockchain'
 
 const InviteModal = () => {
+  const [player, setPlayer] = useState('')
+  const [game] = useGlobalState('game')
   const [inviteModal] = useGlobalState('inviteModal')
+
+  const sendInvitation = async (e) => {
+    e.preventDefault()
+
+    await toast.promise(
+      new Promise(async (resolve, reject) => {
+        await invitePlayer(player, game.id)
+          .then((tx) => {
+            console.log(tx)
+            closeModal()
+            resolve(tx)
+          })
+          .catch((err) => {
+            reject(err)
+          })
+      }),
+      {
+        pending: 'Approve transaction...',
+        success: 'Invitation sent successful 👌',
+        error: 'Encountered error 🤯',
+      }
+    )
+  }
 
   const closeModal = () => {
     setGlobalState('inviteModal', 'scale-0')
@@ -25,14 +52,22 @@ const InviteModal = () => {
             </button>
           </div>
 
-          <form className="flex flex-col justify-center items-start rounded-xl mt-5 mb-5">
+          <form
+            onSubmit={sendInvitation}
+            className="flex flex-col justify-center items-start rounded-xl mt-5 mb-5"
+          >
             <div className="py-2 w-full border border-[#212D4A] rounded-full flex items-center px-4 mb-3 mt-2">
               <input
-                placeholder="Player Account"
                 className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm
                 border-none focus:outline-none focus:ring-0 py-0"
                 name="player"
                 type="text"
+                value={player}
+                onChange={(e) => setPlayer(e.target.value)}
+                minLength={42}
+                maxLength={42}
+                pattern="[A-Za-z0-9]+"
+                placeholder="Player ETH Account"
                 required
               />
             </div>

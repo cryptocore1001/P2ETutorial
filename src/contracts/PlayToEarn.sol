@@ -37,10 +37,11 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
 
     struct InvitationStruct {
         uint gameId;
-        uint gameStake;
         address account;
         bool responded;
+        bool accepted;
         string title;
+        uint stake;
     }
 
     struct PlayerScoreSheetStruct {
@@ -143,10 +144,11 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
 
         invitationsOf[playerAccount][gameId] = InvitationStruct({
             gameId: gameId,
-            gameStake: games[gameId].stake,
             account: playerAccount,
             responded: false,
-            title: games[gameId].title
+            accepted: false,
+            title: games[gameId].title,
+            stake: games[gameId].stake
         });
     }
 
@@ -169,6 +171,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         require(isCreated, "Player creation failed");
 
         invitationsOf[msg.sender][gameId].responded = true;
+        invitationsOf[msg.sender][gameId].accepted = true;
     }
 
     function rejectInvitation(uint gameId) public {
@@ -289,7 +292,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
 
         for (uint256 i = 1; i <= totalGame.current(); i++) {
             if (
-                isPlayerListed(i, msg.sender) &&
+                games[i].owner == msg.sender &&
                 !games[i].deleted &&
                 !games[i].paidOut &&
                 currentTime() < games[i].endDate
@@ -303,7 +306,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
 
         for (uint256 i = 1; i <= totalGame.current(); i++) {
             if (
-                isPlayerListed(i, msg.sender) &&
+                games[i].owner == msg.sender &&
                 !games[i].deleted &&
                 !games[i].paidOut &&
                 currentTime() < games[i].endDate
