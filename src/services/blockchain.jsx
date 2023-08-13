@@ -146,6 +146,7 @@ const rejectInvitation = async (gameId) => {
       const contract = await getEthereumContract()
       tx = await contract.rejectInvitation(gameId)
       await tx.wait()
+      await getInvitations()
       resolve(tx)
     } catch (err) {
       reportError(err)
@@ -279,6 +280,7 @@ const structuredInvitations = (invitations) =>
     gameId: invitation.gameId.toNumber(),
     account: invitation.account.toLowerCase(),
     responded: invitation.responded,
+    accepted: invitation.accepted,
     title: invitation.title,
     stake: fromWei(invitation.stake),
   }))
