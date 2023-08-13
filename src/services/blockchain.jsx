@@ -207,7 +207,7 @@ const getGame = async (id) => {
   try {
     if (!ethereum) return alert('Please install Metamask')
     const contract = await getEthereumContract()
-    const game = await contract.getGame()
+    const game = await contract.getGame(id)
     setGlobalState('game', structuredGames([game])[0])
   } catch (err) {
     reportError(err)
@@ -255,6 +255,7 @@ const structuredGames = (games) =>
       description: game.description,
       owner: game.owner.toLowerCase(),
       participants: game.participants.toNumber(),
+      challenges: game.challenges.toNumber(),
       numberOfWinners: game.numberOfWinners.toNumber(),
       plays: game.plays.toNumber(),
       acceptees: game.acceptees.toNumber(),

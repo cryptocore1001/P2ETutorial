@@ -1,9 +1,14 @@
 import { EmojtCha } from 'emojtcha-react'
 import { useState, useEffect } from 'react'
 import ChatButton from './ChatButton'
+import GameInfo from './GameInfo'
+import { toast } from 'react-toastify'
+import { recordScore } from '../services/blockchain'
+import { useNavigate } from 'react-router-dom'
 
-export default function Game({ id }) {
-  const numEmojtChas = 5
+export default function Game({ game }) {
+  const numEmojtChas = game.challenges
+  const navigate = useNavigate()
 
   const [validationStates, setValidationStates] = useState(
     Array(numEmojtChas).fill(false)
@@ -50,6 +55,27 @@ export default function Game({ id }) {
     return 0
   }
 
+  const submitScore = async () => {
+    await toast.promise(
+      new Promise(async (resolve, reject) => {
+        await recordScore(game.id, calculateElapsedTime())
+          .then((tx) => {
+            console.log(tx)
+            resolve(tx)
+            navigate('/mygames')
+          })
+          .catch((err) => {
+            reject(err)
+          })
+      }),
+      {
+        pending: 'Approve transaction...',
+        success: 'Score submittion successful 👌',
+        error: 'Encountered error 🤯',
+      }
+    )
+  }
+
   return (
     <div className="min-h-screen flex flex-col justify-center items-center">
       {timerStarted &&
@@ -73,29 +99,32 @@ export default function Game({ id }) {
         ))}
 
       {!timerStarted && (
-        <div className="flex justify-center items-center space-x-2">
-          <button
-            className="bg-blue-700 text-white py-2 px-4 rounded
+        <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-x-4 px-5">
+          <GameInfo game={game} />
+          <div className="flex justify-center items-center space-x-2">
+            <button
+              className="bg-blue-700 text-white py-2 px-4 rounded
           hover:bg-blue-600 duration-200 transition-all shadow-md shadow-black"
-            onClick={() => setTimerStarted(true)}
-          >
-            Play Game
-          </button>
+              onClick={() => setTimerStarted(true)}
+            >
+              Play Game
+            </button>
 
-          <ChatButton gid={id} />
+            <ChatButton gid={game?.id} />
+          </div>
         </div>
       )}
 
       {allCaptchasPassed && (
         <div className="mt-4 p-4 border rounded shadow bg-white">
-          <p className="text-lg text-center mb-2">
+          {/* <p className="text-lg text-center mb-2">
             Time taken: {calculateElapsedTime()} seconds
-          </p>
+          </p> */}
           <div className="flex justify-between items-center space-x-2">
             <button
               className="bg-green-500 text-white py-2 px-4 rounded
               hover:bg-green-700 mt-2 w-full shadow-md shadow-black"
-              onClick={() => console.log('Submit clicked!')}
+              onClick={submitScore}
             >
               Submit
             </button>
