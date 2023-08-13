@@ -1,6 +1,7 @@
 import { EmojtCha } from 'emojtcha-react'
 import { useState, useEffect } from 'react'
 import ChatButton from './ChatButton'
+import { recordScore } from '../services/blockchain'
 
 export default function Game({ id }) {
   const numEmojtChas = 5
