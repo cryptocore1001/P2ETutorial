@@ -41,7 +41,7 @@ const GameList = ({ games }) => {
             </div>
           ))
         ) : (
-          <div className="text-xl">You do not have any game</div>
+          <div className="text-lg font-semibold">No game/s yet</div>
         )}
       </div>
     </div>

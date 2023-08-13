@@ -37,6 +37,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
 
     struct InvitationStruct {
         uint gameId;
+        uint gameStake;
         address account;
         bool responded;
         string title;
@@ -142,6 +143,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
 
         invitationsOf[playerAccount][gameId] = InvitationStruct({
             gameId: gameId,
+            gameStake: games[gameId].stake,
             account: playerAccount,
             responded: false,
             title: games[gameId].title

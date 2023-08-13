@@ -19,7 +19,7 @@ const Invitations = () => {
   return (
     <div>
       <Header />
-      {/* <InvitationList invitations={invitations} /> */}
+      <InvitationList invitations={invitations} />
     </div>
   );
 }
