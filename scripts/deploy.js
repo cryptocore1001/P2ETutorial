@@ -1,10 +1,12 @@
 const { ethers } = require('hardhat')
 const fs = require('fs')
 
+const toWei = (num) => ethers.utils.parseEther(num.toString())
+
 async function main() {
   const contract_name = 'PlayToEarn'
   const Contract = await ethers.getContractFactory(contract_name)
-  const contract = await Contract.deploy();
+  const contract = await Contract.deploy()
 
   await contract.deployed()
 

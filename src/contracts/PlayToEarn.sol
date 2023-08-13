@@ -39,6 +39,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         uint gameId;
         address account;
         bool responded;
+        bool accepted;
         string title;
         uint stake;
     }
@@ -145,6 +146,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
             gameId: gameId,
             account: playerAccount,
             responded: false,
+            accepted: false,
             title: games[gameId].title,
             stake: games[gameId].stake
         });
@@ -169,6 +171,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         require(isCreated, "Player creation failed");
 
         invitationsOf[msg.sender][gameId].responded = true;
+        invitationsOf[msg.sender][gameId].accepted = true;
     }
 
     function rejectInvitation(uint gameId) public {
@@ -193,20 +196,15 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         uint totalInvitations;
 
         for (uint i = 1; i <= totalGame.current(); i++) {
-            if (
-                invitationsOf[msg.sender][i].account == msg.sender &&
-                !invitationsOf[msg.sender][i].responded
-            ) totalInvitations++;
+            if (invitationsOf[msg.sender][i].account == msg.sender)
+                totalInvitations++;
         }
 
         Invitations = new InvitationStruct[](totalInvitations);
         uint index;
 
         for (uint i = 1; i <= totalGame.current(); i++) {
-            if (
-                invitationsOf[msg.sender][i].account == msg.sender &&
-                !invitationsOf[msg.sender][i].responded
-            ) {
+            if (invitationsOf[msg.sender][i].account == msg.sender) {
                 Invitations[index++] = invitationsOf[msg.sender][i];
             }
         }
@@ -294,7 +292,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
 
         for (uint256 i = 1; i <= totalGame.current(); i++) {
             if (
-                isPlayerListed(i, msg.sender) &&
+                games[i].owner == msg.sender &&
                 !games[i].deleted &&
                 !games[i].paidOut &&
                 currentTime() < games[i].endDate
@@ -308,7 +306,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
 
         for (uint256 i = 1; i <= totalGame.current(); i++) {
             if (
-                isPlayerListed(i, msg.sender) &&
+                games[i].owner == msg.sender &&
                 !games[i].deleted &&
                 !games[i].paidOut &&
                 currentTime() < games[i].endDate
