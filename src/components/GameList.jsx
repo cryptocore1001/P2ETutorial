@@ -29,7 +29,7 @@ const GameList = ({ games }) => {
                   className="bg-red-700 text-white py-2 px-5 rounded-full
                   hover:bg-red-600 duration-200 transition-all"
                 >
-                  Play
+                  View
                 </Link>
                 <button
                   onClick={() => handleInviteClick(game)}
