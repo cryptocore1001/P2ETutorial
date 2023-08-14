@@ -8,6 +8,7 @@ const { setGlobalState, useGlobalState, getGlobalState } = createGlobalState({
   inviteModal: 'scale-0',
   games: [],
   game: null,
+  group: null,
   messages: [],
   invitations: [],
   scores: [],
