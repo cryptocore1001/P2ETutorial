@@ -114,7 +114,14 @@ export default function Game({ game, isPlayed }) {
                   Play Game
                 </button>
               )}
-
+            {/* {Date.now() > game.endDate && ( */}
+              <button
+                className="bg-green-700 text-white py-2 px-4 rounded
+              hover:bg-green-600 duration-200 transition-all shadow-md shadow-black"
+              >
+                Game Scores
+              </button>
+            {/* )} */}
             <ChatButton gid={game?.id} />
           </div>
         </div>
