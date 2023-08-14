@@ -1,54 +1,54 @@
 import React, { useEffect, useState } from 'react'
 import Identicon from 'react-identicons'
 import { FaTimes } from 'react-icons/fa'
-import { setGlobalState, useGlobalState } from '../store'
+import { setGlobalState, truncate, useGlobalState } from '../store'
 import { useParams } from 'react-router-dom'
 import { getMessages, listenForMessage, sendMessage } from '../services/chat'
 
 const Chat = () => {
-  const [connectedAccount] = useGlobalState('connectedAccount')
-  const [chatModal] = useGlobalState('chatModal')
-  const [messages] = useGlobalState('messages')
-  const [message, setMessage] = useState('')
-  const { id } = useParams()
+  const [connectedAccount] = useGlobalState("connectedAccount");
+  const [chatModal] = useGlobalState("chatModal");
+  const [messages] = useGlobalState("messages");
+  const [message, setMessage] = useState("");
+  const { id } = useParams();
 
   const onSendMessage = async (e) => {
-    e.preventDefault()
-    if (!message) return
+    e.preventDefault();
+    if (!message) return;
 
-    await sendMessage(id, message).then((msg) => {
-      setGlobalState('messages', (prevState) => [...prevState, msg])
+    await sendMessage(`guid_${id}`, message).then((msg) => {
+      setGlobalState("messages", (prevState) => [...prevState, msg]);
       console.log(msg);
-      setMessage('')
-      scrollToEnd()
-    })
-  }
+      setMessage("");
+      scrollToEnd();
+    });
+  };
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     await getMessages(id).then((msgs) => {
-  //       setGlobalState('messages', msgs)
-  //       scrollToEnd()
-  //     })
+  useEffect(() => {
+    const fetchData = async () => {
+      await getMessages(`guid_${id}`).then((msgs) => {
+        setGlobalState('messages', msgs)
+        scrollToEnd()
+      })
 
-  //     await listenForMessage(id).then((msg) => {
-  //       setGlobalState('messages', (prevState) => [...prevState, msg])
-  //       scrollToEnd()
-  //     })
-  //   }
+      await listenForMessage(`guid_${id}`).then((msg) => {
+        setGlobalState('messages', (prevState) => [...prevState, msg])
+        scrollToEnd()
+      })
+    }
 
-  //   fetchData()
-  // }, [])
+    fetchData()
+  }, [])
 
   const scrollToEnd = () => {
-    const elmnt = document.getElementById('messages-container')
-    elmnt.scrollTop = elmnt.scrollHeight
-  }
+    const elmnt = document.getElementById("messages-container");
+    elmnt.scrollTop = elmnt.scrollHeight;
+  };
 
   const closeModal = () => {
-    setGlobalState('chatModal', 'scale-0')
-    setMessage('')
-  }
+    setGlobalState("chatModal", "scale-0");
+    setMessage("");
+  };
 
   return (
     <div
@@ -77,17 +77,14 @@ const Chat = () => {
                 <Message
                   text={msg.text}
                   owner={msg.sender.uid}
-                  time={Number(msg.sentAt + '000')}
+                  time={Number(msg.sentAt + "000")}
                   you={connectedAccount == msg.sender.uid}
                   key={i}
                 />
               ))}
             </div>
 
-            <form
-              onSubmit={onSendMessage}
-              className="h-[4rem] w-full mt-4"
-            >
+            <form onSubmit={onSendMessage} className="h-[4rem] w-full mt-4">
               <input
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
@@ -100,7 +97,7 @@ const Chat = () => {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 const Message = ({ text, time, owner, you }) => {

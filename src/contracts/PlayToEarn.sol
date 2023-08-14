@@ -317,6 +317,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         }
     }
 
+
     function sortScores(
         PlayerScoreSheetStruct[] memory playersScores
     ) public pure returns (PlayerScoreSheetStruct[] memory) {

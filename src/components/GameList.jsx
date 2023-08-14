@@ -2,6 +2,7 @@ import React from 'react'
 import { formatDate, setGlobalState, truncate } from '../store'
 import { Link } from 'react-router-dom'
 
+
 const GameList = ({ games }) => {
   const handleInviteClick = (game) => {
     setGlobalState('game', game)
@@ -41,7 +42,7 @@ const GameList = ({ games }) => {
             </div>
           ))
         ) : (
-          <div className="text-xl">You do not have any game</div>
+          <div className="text-lg font-semibold">No game/s yet</div>
         )}
       </div>
     </div>

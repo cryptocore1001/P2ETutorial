@@ -134,7 +134,8 @@ const createNewGroup = async (GUID, groupName) => {
 const getGroup = async (GUID) => {
   return new Promise(async (resolve, reject) => {
     await CometChat.getGroup(GUID)
-      .then((group) => resolve(group))
+      .then((group) => resolve(group)
+      )
       .catch((error) => reject(error))
   })
 }

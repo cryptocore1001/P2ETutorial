@@ -276,6 +276,7 @@ const structuredPlayersScore = (playersScore) =>
     played: playerScore.played,
   }))
 
+
 const structuredInvitations = (invitations) =>
   invitations.map((invitation) => ({
     gameId: invitation.gameId.toNumber(),

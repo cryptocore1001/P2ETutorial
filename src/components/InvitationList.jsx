@@ -105,7 +105,7 @@ const InvitationList = ({ invitations }) => {
         </div>
       ))}
     </div>
-  )
+  );
 }
 
 export default InvitationList
