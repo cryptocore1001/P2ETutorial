@@ -6,7 +6,7 @@ import { toast } from 'react-toastify'
 import { recordScore } from '../services/blockchain'
 import { useNavigate } from 'react-router-dom'
 
-export default function Game({ game }) {
+export default function Game({ game, isPlayed }) {
   const numEmojtChas = game.challenges
   const navigate = useNavigate()
 
@@ -102,13 +102,18 @@ export default function Game({ game }) {
         <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-x-4 px-5">
           <GameInfo game={game} />
           <div className="flex justify-center items-center space-x-2">
-            <button
-              className="bg-blue-700 text-white py-2 px-4 rounded
-          hover:bg-blue-600 duration-200 transition-all shadow-md shadow-black"
-              onClick={() => setTimerStarted(true)}
-            >
-              Play Game
-            </button>
+            {Date.now() > game.startDate &&
+              Date.now() < game.endDate &&
+              game.acceptees >= game.numberOfWinners + 1 &&
+              !isPlayed && (
+                <button
+                  className="bg-blue-700 text-white py-2 px-4 rounded
+              hover:bg-blue-600 duration-200 transition-all shadow-md shadow-black"
+                  onClick={() => setTimerStarted(true)}
+                >
+                  Play Game
+                </button>
+              )}
 
             <ChatButton gid={game?.id} />
           </div>

@@ -36,4 +36,17 @@ const formatDate = (timestamp) => {
   return date.toLocaleDateString(undefined, options)
 }
 
-export { setGlobalState, useGlobalState, getGlobalState, truncate, formatDate }
+const timestampToDate = (timestamp) => {
+  const date = new Date(timestamp)
+  const options = { year: 'numeric', month: 'long', day: 'numeric' }
+  return date.toLocaleDateString('en-US', options)
+}
+
+export {
+  setGlobalState,
+  useGlobalState,
+  getGlobalState,
+  truncate,
+  formatDate,
+  timestampToDate,
+}

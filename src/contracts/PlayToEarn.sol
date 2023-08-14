@@ -224,6 +224,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
 
         scores[gameId][msg.sender].score = score;
         scores[gameId][msg.sender].played = true;
+        scores[gameId][msg.sender].player = msg.sender;
     }
 
     function getScores(
@@ -363,7 +364,6 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         gameData.owner = msg.sender;
         gameData.participants = participants;
         gameData.challenges = challenges;
-        gameData.acceptees = 1;
         gameData.stake = msg.value;
         gameData.numberOfWinners = numberOfWinners;
         gameData.startDate = startDate;
