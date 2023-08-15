@@ -1,7 +1,8 @@
-import { getGlobalState, setGlobalState } from '../store'
+import { setGlobalState } from '../store'
 import abi from '../abis/src/contracts/PlayToEarn.sol/PlayToEarn.json'
 import address from '../abis/contractAddress.json'
 import { ethers } from 'ethers'
+import { logOutWithCometChat } from './chat'
 
 const { ethereum } = window
 const ContractAddress = address.address
@@ -45,6 +46,7 @@ const isWalletConnected = async () => {
       setGlobalState('connectedAccount', accounts[0])
       await loadData()
       await isWalletConnected()
+      await logOutWithCometChat()
     })
 
     if (accounts.length) {
@@ -163,6 +165,7 @@ const recordScore = async (gameId, score) => {
       const contract = await getEthereumContract()
       tx = await contract.recordScore(gameId, score)
       await tx.wait()
+      await getGame(gameId)
       resolve(tx)
     } catch (err) {
       reportError(err)
@@ -179,6 +182,7 @@ const payout = async (gameId) => {
       const contract = await getEthereumContract()
       tx = await contract.payout(gameId)
       await tx.wait()
+      await getGame(gameId)
       resolve(tx)
     } catch (err) {
       reportError(err)
@@ -269,13 +273,20 @@ const structuredGames = (games) =>
     .sort((a, b) => b.timestamp - a.timestamp)
 
 const structuredPlayersScore = (playersScore) =>
-  playersScore.map((playerScore) => ({
-    gameId: playerScore.gameId.toNumber(),
-    player: playerScore.player.toLowerCase(),
-    score: playerScore.score.toNumber(),
-    played: playerScore.played,
-  }))
-
+  playersScore
+    .map((playerScore) => ({
+      gameId: playerScore.gameId.toNumber(),
+      player: playerScore.player.toLowerCase(),
+      score: playerScore.score.toNumber(),
+      played: playerScore.played,
+    }))
+    .sort((a, b) => {
+      if (a.played !== b.played) {
+        return a.played ? -1 : 1
+      } else {
+        return a.score - b.score
+      }
+    })
 
 const structuredInvitations = (invitations) =>
   invitations.map((invitation) => ({

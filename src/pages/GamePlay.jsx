@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { Header, Game, Chat } from '../components'
 import { getGame, getScores } from '../services/blockchain'
-import { useGlobalState } from '../store'
+import { setGlobalState, useGlobalState } from '../store'
+import { getGroup } from '../services/chat'
+import GameResult from '../components/GameResult'
 
 const GamePlay = () => {
   const { id } = useParams();
@@ -11,13 +13,14 @@ const GamePlay = () => {
   const [connectedAccount] = useGlobalState("connectedAccount");
   const [loaded, setLoaded] = useState(false);
 
-
   useEffect(() => {
     const fetchData = async () => {
-      await getGame(id);
-      await getScores(id);
-      setLoaded(true);
-    };
+      await getGame(id)
+      await getScores(id)
+      setLoaded(true)
+      const GROUP = await getGroup(`guid_${id}`)
+      setGlobalState('group', GROUP)
+    }
 
     fetchData();
   }, [id]);
@@ -32,6 +35,7 @@ const GamePlay = () => {
             (score) => score.played && score.player == connectedAccount
           )}
         />
+        <GameResult game={game} scores={scores} />
         <Chat gid={id} />
       </>
     )

@@ -13,30 +13,29 @@ import {
   logOutWithCometChat,
   loginWithCometChat,
   signUpWithCometChat,
-} from "../services/chat";
-import { setGlobalState, useGlobalState } from "../store";
-import { IoMdPeople, IoIosAddCircle } from "react-icons/io";
+} from '../services/chat'
+import { setGlobalState, useGlobalState } from '../store'
+import { IoMdPeople, IoIosAddCircle } from 'react-icons/io'
+
 
 const ChatButton = ({ gid }) => {
-  const [connectedAccount] = useGlobalState("connectedAccount");
-  const [currentUser] = useGlobalState("currentUser");
-  const [game] = useGlobalState("game");
-  const [group, setGroup] = useState({})
-  
+  const [connectedAccount] = useGlobalState('connectedAccount')
+  const [currentUser] = useGlobalState('currentUser')
+  const [game] = useGlobalState('game')
+  const [group] = useGlobalState('group')
 
   const fetchGroup = async () => {
     try {
       const Group = await getGroup(`guid_${gid}`);
-      setGroup(Group); 
+      setGlobalState('group',Group); 
     } catch (err) {
       console.log(err)
     }
   }
 
-
-  useEffect(() => {
+  useEffect(()=>{
     fetchGroup()
-  }, []);
+  },[])
 
   const handleSignUp = async () => {
     await toast.promise(
@@ -163,7 +162,7 @@ const ChatButton = ({ gid }) => {
               {({ active }) => (
                 <button
                   className={`flex justify-start items-center space-x-1 ${
-                    active ? "bg-gray-200 text-black" : "text-blue-500"
+                    active ? 'bg-gray-200 text-black' : 'text-blue-500'
                   } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
                   onClick={handleSignUp}
                 >
@@ -176,7 +175,7 @@ const ChatButton = ({ gid }) => {
               {({ active }) => (
                 <button
                   className={`flex justify-start items-center space-x-1 ${
-                    active ? "bg-gray-200 text-black" : "text-gray-900"
+                    active ? 'bg-gray-200 text-black' : 'text-gray-900'
                   } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
                   onClick={handleLogin}
                 >
@@ -192,7 +191,7 @@ const ChatButton = ({ gid }) => {
               {({ active }) => (
                 <button
                   className={`flex justify-start items-center space-x-1 ${
-                    active ? "bg-gray-200 text-black" : "text-gray-900"
+                    active ? 'bg-gray-200 text-black' : 'text-gray-900'
                   } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
                   onClick={handleCreateGroup}
                 >
@@ -210,7 +209,7 @@ const ChatButton = ({ gid }) => {
               {({ active }) => (
                 <button
                   className={`flex justify-start items-center space-x-1 ${
-                    active ? "bg-gray-200 text-black" : "text-gray-900"
+                    active ? 'bg-gray-200 text-black' : 'text-gray-900'
                   } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
                   onClick={handleJoinGroup}
                 >
@@ -237,11 +236,12 @@ const ChatButton = ({ gid }) => {
                 )}
               </Menu.Item>
             )}
+
             <Menu.Item>
               {({ active }) => (
                 <button
                   className={`flex justify-start items-center space-x-1 ${
-                    active ? "bg-gray-200 text-black" : "text-gray-900"
+                    active ? 'bg-gray-200 text-black' : 'text-gray-900'
                   } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
                   onClick={handleLogout}
                 >
