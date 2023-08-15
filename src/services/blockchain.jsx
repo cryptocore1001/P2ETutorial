@@ -1,7 +1,8 @@
-import { getGlobalState, setGlobalState } from '../store'
+import { setGlobalState } from '../store'
 import abi from '../abis/src/contracts/PlayToEarn.sol/PlayToEarn.json'
 import address from '../abis/contractAddress.json'
 import { ethers } from 'ethers'
+import { logOutWithCometChat } from './chat'
 
 const { ethereum } = window
 const ContractAddress = address.address
@@ -45,6 +46,7 @@ const isWalletConnected = async () => {
       setGlobalState('connectedAccount', accounts[0])
       await loadData()
       await isWalletConnected()
+      await logOutWithCometChat()
     })
 
     if (accounts.length) {
