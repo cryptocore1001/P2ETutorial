@@ -172,7 +172,7 @@ const CreateGame = () => {
                 placeholder="Start Date"
                 className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm border-none focus:outline-none focus:ring-0 py-0"
                 name="starts"
-                type="date"
+                type="datetime-local"
                 value={game.starts}
                 onChange={handleChange}
                 required
@@ -184,7 +184,7 @@ const CreateGame = () => {
                 placeholder="End Date"
                 className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm border-none focus:outline-none focus:ring-0 py-0"
                 name="ends"
-                type='date'
+                type="datetime-local"
                 value={game.ends}
                 onChange={handleChange}
                 required

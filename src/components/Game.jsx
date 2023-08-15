@@ -3,8 +3,9 @@ import { useState, useEffect } from 'react'
 import ChatButton from './ChatButton'
 import GameInfo from './GameInfo'
 import { toast } from 'react-toastify'
-import { recordScore } from '../services/blockchain'
+import { payout, recordScore } from '../services/blockchain'
 import { useNavigate } from 'react-router-dom'
+import { setGlobalState } from '../store'
 
 export default function Game({ game, isPlayed }) {
   const numEmojtChas = game.challenges
@@ -76,6 +77,26 @@ export default function Game({ game, isPlayed }) {
     )
   }
 
+  const handlePayout = async () => {
+    await toast.promise(
+      new Promise(async (resolve, reject) => {
+        await payout(game.id)
+          .then((tx) => {
+            console.log(tx)
+            resolve(tx)
+          })
+          .catch((err) => {
+            reject(err)
+          })
+      }),
+      {
+        pending: 'Approve transaction...',
+        success: 'Paid out successful 👌',
+        error: 'Encountered error 🤯',
+      }
+    )
+  }
+
   return (
     <div className="min-h-screen flex flex-col justify-center items-center">
       {timerStarted &&
@@ -99,7 +120,7 @@ export default function Game({ game, isPlayed }) {
         ))}
 
       {!timerStarted && (
-        <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-x-4 px-5">
+        <div className="flex flex-col justify-center items-center space-y-4 px-5">
           <GameInfo game={game} />
           <div className="flex justify-center items-center space-x-2">
             {Date.now() > game.startDate &&
@@ -111,17 +132,29 @@ export default function Game({ game, isPlayed }) {
               hover:bg-blue-600 duration-200 transition-all shadow-md shadow-black"
                   onClick={() => setTimerStarted(true)}
                 >
-                  Play Game
+                  Play
                 </button>
               )}
-            {/* {Date.now() > game.endDate && ( */}
-              <button
-                className="bg-green-700 text-white py-2 px-4 rounded
-              hover:bg-green-600 duration-200 transition-all shadow-md shadow-black"
-              >
-                Game Scores
-              </button>
-            {/* )} */}
+            {Date.now() > game.endDate && (
+              <>
+                <button
+                  className="bg-green-700 text-white py-2 px-4 rounded
+                hover:bg-green-600 duration-200 transition-all shadow-md shadow-black"
+                  onClick={() => setGlobalState('resultModal', 'scale-100')}
+                >
+                  Result
+                </button>
+                {!game.paidOut && (
+                  <button
+                    className="bg-orange-700 text-white py-2 px-4 rounded
+                hover:bg-orange-600 duration-200 transition-all shadow-md shadow-black"
+                    onClick={handlePayout}
+                  >
+                    Payout
+                  </button>
+                )}
+              </>
+            )}
             <ChatButton gid={game?.id} />
           </div>
         </div>

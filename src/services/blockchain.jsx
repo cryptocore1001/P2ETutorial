@@ -163,6 +163,7 @@ const recordScore = async (gameId, score) => {
       const contract = await getEthereumContract()
       tx = await contract.recordScore(gameId, score)
       await tx.wait()
+      await getGame(gameId)
       resolve(tx)
     } catch (err) {
       reportError(err)
@@ -179,6 +180,7 @@ const payout = async (gameId) => {
       const contract = await getEthereumContract()
       tx = await contract.payout(gameId)
       await tx.wait()
+      await getGame(gameId)
       resolve(tx)
     } catch (err) {
       reportError(err)
@@ -269,13 +271,20 @@ const structuredGames = (games) =>
     .sort((a, b) => b.timestamp - a.timestamp)
 
 const structuredPlayersScore = (playersScore) =>
-  playersScore.map((playerScore) => ({
-    gameId: playerScore.gameId.toNumber(),
-    player: playerScore.player.toLowerCase(),
-    score: playerScore.score.toNumber(),
-    played: playerScore.played,
-  }))
-
+  playersScore
+    .map((playerScore) => ({
+      gameId: playerScore.gameId.toNumber(),
+      player: playerScore.player.toLowerCase(),
+      score: playerScore.score.toNumber(),
+      played: playerScore.played,
+    }))
+    .sort((a, b) => {
+      if (a.played !== b.played) {
+        return a.played ? -1 : 1
+      } else {
+        return a.score - b.score
+      }
+    })
 
 const structuredInvitations = (invitations) =>
   invitations.map((invitation) => ({

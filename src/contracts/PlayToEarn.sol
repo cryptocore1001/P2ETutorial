@@ -4,9 +4,11 @@ pragma solidity >=0.7.0 <0.9.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 contract PlayToEarn is Ownable, ReentrancyGuard {
     using Counters for Counters.Counter;
+    using SafeMath for uint256;
 
     Counters.Counter private totalGame;
     Counters.Counter private totalPlayers;
@@ -52,7 +54,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
     }
 
     uint private totalBalance;
-    uint serviceFee = 0.5 ether;
+    uint serviceFee = 5;
 
     mapping(uint => GameStruct) games;
     mapping(uint => PlayerStruct) players;
@@ -138,6 +140,10 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
     function invitePlayer(address playerAccount, uint gameId) public {
         require(gameExists[gameId], "Game does not exist");
         require(
+            games[gameId].acceptees <= games[gameId].participants,
+            "Out of capacity"
+        );
+        require(
             !isListed[gameId][playerAccount],
             "Player is already in this game"
         );
@@ -172,6 +178,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
 
         invitationsOf[msg.sender][gameId].responded = true;
         invitationsOf[msg.sender][gameId].accepted = true;
+        scores[gameId][msg.sender].player = msg.sender;
     }
 
     function rejectInvitation(uint gameId) public {
@@ -222,6 +229,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
             "Game play must be in session"
         );
 
+        games[gameId].plays++;
         scores[gameId][msg.sender].score = score;
         scores[gameId][msg.sender].played = true;
         scores[gameId][msg.sender].player = msg.sender;
@@ -247,16 +255,15 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
 
     function payout(uint gameId) public {
         require(gameExists[gameId], "Game does not exist");
-        require(currentTime() > games[gameId].endDate, "Game still in session");
+        require(currentTime() > games[gameId].endDate, "Game still in session"); // disable rule while testing
         require(!games[gameId].paidOut, "Game already paid out");
 
-        uint fee = (games[gameId].stake * serviceFee) / 100;
-        uint profit = games[gameId].stake - fee;
-        _payTo(owner(), fee);
+        uint fee = (games[gameId].stake.mul(serviceFee)).div(100);
+        uint profit = games[gameId].stake.sub(fee);
+        payTo(owner(), fee);
 
-        // paying the game owner half the service fee and subtracting it from the game profit
-        profit = profit - (fee / 2);
-        _payTo(games[gameId].owner, (fee / 2));
+        profit = profit.sub(fee.div(2));
+        payTo(games[gameId].owner, fee.div(2));
 
         uint available;
         for (uint i = 1; i <= totalPlayers.current(); i++) {
@@ -277,8 +284,11 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         Scores = sortScores(Scores);
 
         for (uint i = 0; i < games[gameId].numberOfWinners; i++) {
-            _payTo(Scores[i].player, profit / games[gameId].numberOfWinners);
+            uint payoutAmount = profit.div(games[gameId].numberOfWinners);
+            payTo(Scores[i].player, payoutAmount);
         }
+
+        games[gameId].paidOut = true;
     }
 
     function isPlayerListed(
@@ -316,7 +326,6 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
             }
         }
     }
-
 
     function sortScores(
         PlayerScoreSheetStruct[] memory playersScores
@@ -398,7 +407,7 @@ contract PlayToEarn is Ownable, ReentrancyGuard {
         return (block.timestamp * 1000) + 1000;
     }
 
-    function _payTo(address to, uint256 amount) internal {
+    function payTo(address to, uint256 amount) internal {
         (bool success, ) = payable(to).call{value: amount}("");
         require(success);
     }

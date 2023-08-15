@@ -3,11 +3,10 @@ import { timestampToDate, truncate } from '../store'
 
 const GameInfo = ({ game }) => {
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md sm:w-1/3">
+    <div className="bg-white p-6 rounded-lg shadow-md sm:w-2/5">
       <h3 className="text-lg font-semibold mb-2">
         {game.title} (Instructions)
       </h3>
-      <p className="text-gray-600 mb-2">{game.description}</p>
       <p className="text-gray-600">
         This game is hosted by{' '}
         <span className="font-medium text-black">
@@ -19,7 +18,7 @@ const GameInfo = ({ game }) => {
         </span>{' '}
         joining from the globe and{' '}
         <span className="font-medium text-black">
-          {game.acceptees} persons{' '}
+          {game.acceptees} person(s){' '}
         </span>
         already onboarded.
         <br />
@@ -34,7 +33,7 @@ const GameInfo = ({ game }) => {
         </span>{' '}
         will be shared amongst the{' '}
         <span className="font-medium text-black">
-          {game.numberOfWinners} persons
+          {game.numberOfWinners} person(s)
         </span>{' '}
         to emerge as winners.
         <br />
@@ -46,9 +45,13 @@ const GameInfo = ({ game }) => {
         and so far,
         <span className="font-medium text-black">
           {' '}
-          {game.plays} persons
+          {game.plays} person(s)
         </span>{' '}
-        have played so far.
+        have played and{' '}
+        <span className="font-medium text-black">
+          is {!game.paidOut && ' yet to be '} paidout
+        </span>
+        .
       </p>
     </div>
   )

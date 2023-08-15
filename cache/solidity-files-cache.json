@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/daltonic/Sites/p2e/src/contracts/PlayToEarn.sol": {
-      "lastModificationDate": 1692014065774,
-      "contentHash": "9f55b99ef676aa895f36eab739c0608e",
+      "lastModificationDate": 1692094475522,
+      "contentHash": "2f80fefad30a82baa604567c833854de",
       "sourceName": "src/contracts/PlayToEarn.sol",
       "solcConfig": {
         "version": "0.8.11",
@@ -28,16 +28,21 @@
           }
         }
       },
-      "imports": [],
+      "imports": [
+        "@openzeppelin/contracts/access/Ownable.sol",
+        "@openzeppelin/contracts/utils/Counters.sol",
+        "@openzeppelin/contracts/security/ReentrancyGuard.sol",
+        "@openzeppelin/contracts/utils/math/SafeMath.sol"
+      ],
       "versionPragmas": [
-        "^0.8.0"
+        ">=0.7.0 <0.9.0"
       ],
       "artifacts": [
-        "ReentrancyGuard"
+        "PlayToEarn"
       ]
     },
-    "C:\\Users\\DELL\\Desktop\\DAPPMENTORS\\P2E\\node_modules\\@openzeppelin\\contracts\\access\\Ownable.sol": {
-      "lastModificationDate": 1688391560046,
+    "/Users/daltonic/Sites/p2e/node_modules/@openzeppelin/contracts/access/Ownable.sol": {
+      "lastModificationDate": 1691746057004,
       "contentHash": "5a20b2cad87ddb61c7a3a6af21289e28",
       "sourceName": "@openzeppelin/contracts/access/Ownable.sol",
       "solcConfig": {
@@ -73,8 +78,43 @@
         "Ownable"
       ]
     },
-    "C:\\Users\\DELL\\Desktop\\DAPPMENTORS\\P2E\\node_modules\\@openzeppelin\\contracts\\utils\\Counters.sol": {
-      "lastModificationDate": 1688391544707,
+    "/Users/daltonic/Sites/p2e/node_modules/@openzeppelin/contracts/security/ReentrancyGuard.sol": {
+      "lastModificationDate": 1691746057010,
+      "contentHash": "1535f8c0c68463f8c1b5239f7584e71f",
+      "sourceName": "@openzeppelin/contracts/security/ReentrancyGuard.sol",
+      "solcConfig": {
+        "version": "0.8.11",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "ReentrancyGuard"
+      ]
+    },
+    "/Users/daltonic/Sites/p2e/node_modules/@openzeppelin/contracts/utils/Counters.sol": {
+      "lastModificationDate": 1691746057015,
       "contentHash": "74654e3ae5d7f39555055dfe244dab7a",
       "sourceName": "@openzeppelin/contracts/utils/Counters.sol",
       "solcConfig": {
@@ -108,8 +148,8 @@
         "Counters"
       ]
     },
-    "C:\\Users\\DELL\\Desktop\\DAPPMENTORS\\P2E\\node_modules\\@openzeppelin\\contracts\\utils\\Context.sol": {
-      "lastModificationDate": 1688391544695,
+    "/Users/daltonic/Sites/p2e/node_modules/@openzeppelin/contracts/utils/Context.sol": {
+      "lastModificationDate": 1691746057015,
       "contentHash": "5f2c5c4b6af2dd4551027144797bc8be",
       "sourceName": "@openzeppelin/contracts/utils/Context.sol",
       "solcConfig": {
@@ -143,10 +183,10 @@
         "Context"
       ]
     },
-    "C:\\Users\\DELL\\Desktop\\DAPPMENTORS\\P2E\\src\\contracts\\PlayToEarn.sol": {
-      "lastModificationDate": 1691931772610,
-      "contentHash": "92d3ccb574d039056386853d2ec7581f",
-      "sourceName": "src/contracts/PlayToEarn.sol",
+    "/Users/daltonic/Sites/p2e/node_modules/@openzeppelin/contracts/utils/math/SafeMath.sol": {
+      "lastModificationDate": 1691746059026,
+      "contentHash": "f6f4fda16c536e57069af40a245c985e",
+      "sourceName": "@openzeppelin/contracts/utils/math/SafeMath.sol",
       "solcConfig": {
         "version": "0.8.11",
         "settings": {
@@ -170,16 +210,12 @@
           }
         }
       },
-      "imports": [
-        "@openzeppelin/contracts/access/Ownable.sol",
-        "@openzeppelin/contracts/utils/Counters.sol",
-        "@openzeppelin/contracts/security/ReentrancyGuard.sol"
-      ],
+      "imports": [],
       "versionPragmas": [
-        ">=0.7.0 <0.9.0"
+        "^0.8.0"
       ],
       "artifacts": [
-        "PlayToEarn"
+        "SafeMath"
       ]
     }
   }

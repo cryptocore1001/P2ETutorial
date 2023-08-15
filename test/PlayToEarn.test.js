@@ -5,13 +5,15 @@ const toWei = (num) => ethers.utils.parseEther(num.toString())
 describe('Contracts', () => {
   let contract, result
 
-  const desc = 'showcase your speed in a game',
-    title = 'Game title',
-    participants = 4,
-    numberOfWinners = 1,
-    challenges = 5,
-    startDate = 1691757204686,
-    endDate = 1691761043971
+  const description = 'showcase your speed in a game'
+  const title = 'Game title'
+  const participants = 4
+  const winners = 1
+  const challenges = 5
+  const starts = Date.now() - 10 * 60 * 1000
+  const ends = Date.now() + 10 * 60 * 1000
+  const stake = 0.5
+  const gameId = 1
 
   beforeEach(async () => {
     const Contract = await ethers.getContractFactory('PlayToEarn')
@@ -24,14 +26,14 @@ describe('Contracts', () => {
   beforeEach(async () => {
     await contract.createGame(
       title,
-      desc,
+      description,
       participants,
-      numberOfWinners,
+      winners,
       challenges,
-      startDate,
-      endDate,
+      starts,
+      ends,
       {
-        value: toWei(0.05),
+        value: toWei(stake),
       }
     )
   })
@@ -43,7 +45,7 @@ describe('Contracts', () => {
     })
 
     it('should confirm fetching a single game', async () => {
-      result = await contract.getGame(1)
+      result = await contract.getGame(gameId)
       expect(result.id).to.be.equal(1)
     })
 
@@ -51,22 +53,40 @@ describe('Contracts', () => {
       result = await contract.connect(user1).getInvitations()
       expect(result).to.have.lengthOf(0)
 
-      await contract.invitePlayer(user1.address, 1)
-      await contract.invitePlayer(user2.address, 1)
+      await contract.invitePlayer(user1.address, gameId)
+      await contract.invitePlayer(user2.address, gameId)
 
       result = await contract.connect(user1).getInvitations()
       expect(result).to.have.lengthOf(1)
 
       await contract.connect(user1).acceptInvitation(1, {
-        value: toWei(0.05),
+        value: toWei(stake),
       })
 
-      result = await contract.isPlayerListed(1, user1.address)
+      result = await contract.isPlayerListed(gameId, user1.address)
       expect(result).to.be.true
 
-      await contract.connect(user2).rejectInvitation(1)
-      result = await contract.isPlayerListed(1, user2.address)
+      await contract.connect(user2).rejectInvitation(gameId)
+      result = await contract.isPlayerListed(gameId, user2.address)
       expect(result).to.be.false
+    })
+
+    it('should confirm payouts', async () => {
+      await contract.invitePlayer(user1.address, gameId)
+      await contract.connect(user1).acceptInvitation(gameId, {
+        value: toWei(stake),
+      })
+
+      await contract.recordScore(gameId, 23)
+      await contract.connect(user1).recordScore(gameId, 19)
+
+      result = await contract.getGame(gameId)
+      expect(result.paidOut).to.be.false
+
+      await contract.payout(gameId)
+
+      result = await contract.getGame(gameId)
+      expect(result.paidOut).to.be.true
     })
   })
 })
