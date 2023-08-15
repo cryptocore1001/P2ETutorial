@@ -77,4 +77,4 @@ Access the [Teaching Guide Here](https://docs.google.com/document/d/13bBRyAO0bEw
 - 🐻 [Solidity](https://soliditylang.org/)
 - 👀 [EthersJs](https://docs.ethers.io/v5/)
 - 🎅 [Faucet](https://www.alchemy.com/faucets)
-- ✨ [Live Demo](https://dapp-breeds.vercel.app/)
+- ✨ [Live Demo](https://play-to-earn-three.vercel.app/)
