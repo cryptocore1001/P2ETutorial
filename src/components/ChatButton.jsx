@@ -1,31 +1,42 @@
-import React, { useEffect } from 'react'
-import { MdOutlineChat } from 'react-icons/md'
-import { FiLogIn } from 'react-icons/fi'
-import { HiLogin } from 'react-icons/hi'
-import { FiUsers } from 'react-icons/fi'
-import { AiFillLock } from 'react-icons/ai'
-import { Menu } from '@headlessui/react'
-import { toast } from 'react-toastify'
+import React, { useCallback, useEffect, useState } from "react";
+import { MdOutlineChat } from "react-icons/md";
+import { FiLogIn } from "react-icons/fi";
+import { HiLogin } from "react-icons/hi";
+import { FiUsers } from "react-icons/fi";
+import { AiFillLock } from "react-icons/ai";
+import { Menu } from "@headlessui/react";
+import { toast } from "react-toastify";
 import {
   createNewGroup,
-  joinGroup,
   getGroup,
+  joinGroup,
   logOutWithCometChat,
   loginWithCometChat,
   signUpWithCometChat,
-  checkAuthState,
-} from '../services/chat'
-import { setGlobalState, useGlobalState } from '../store'
+} from "../services/chat";
+import { setGlobalState, useGlobalState } from "../store";
 import { IoMdPeople, IoIosAddCircle } from "react-icons/io";
 
 const ChatButton = ({ gid }) => {
-  const [connectedAccount] = useGlobalState('connectedAccount')
-  const [currentUser] = useGlobalState('currentUser')
-  const [game] = useGlobalState('game')
-  const [group] = useGlobalState('group')
+  const [connectedAccount] = useGlobalState("connectedAccount");
+  const [currentUser] = useGlobalState("currentUser");
+  const [game] = useGlobalState("game");
+  const [group, setGroup] = useState({})
+  
+
+  const fetchGroup = async () => {
+    try {
+      const Group = await getGroup(`guid_${gid}`);
+      setGroup(Group); 
+    } catch (err) {
+      console.log(err)
+    }
+  }
 
 
-
+  useEffect(() => {
+    fetchGroup()
+  }, []);
 
   const handleSignUp = async () => {
     await toast.promise(
@@ -33,103 +44,103 @@ const ChatButton = ({ gid }) => {
         await signUpWithCometChat(connectedAccount)
           .then((user) => resolve(user))
           .catch((error) => {
-            alert(JSON.stringify(error))
-            reject(error)
-          })
+            alert(JSON.stringify(error));
+            reject(error);
+          });
       }),
       {
-        pending: 'Signning up...',
-        success: 'Signed up successfully, please login 👌',
-        error: 'Encountered error 🤯',
+        pending: "Signning up...",
+        success: "Signed up successfully, please login 👌",
+        error: "Encountered error 🤯",
       }
-    )
-  }
+    );
+  };
 
   const handleLogin = async () => {
     await toast.promise(
       new Promise(async (resolve, reject) => {
         await loginWithCometChat(connectedAccount)
           .then((user) => {
-            setGlobalState('currentUser', user)
-            resolve(user)
+            setGlobalState("currentUser", user);
+            resolve(user);
           })
           .catch((error) => {
-            alert(JSON.stringify(error))
-            reject(error)
-          })
+            alert(JSON.stringify(error));
+            reject(error);
+          });
       }),
       {
-        pending: 'Logging...',
-        success: 'Logged in successfully 👌',
-        error: 'Encountered error 🤯',
+        pending: "Logging...",
+        success: "Logged in successfully 👌",
+        error: "Encountered error 🤯",
       }
-    )
-  }
+    );
+  };
 
   const handleLogout = async () => {
     await toast.promise(
       new Promise(async (resolve, reject) => {
         await logOutWithCometChat()
           .then(() => {
-            setGlobalState('currentUser', null)
-            resolve()
+            setGlobalState("currentUser", null);
+            resolve();
           })
           .catch((error) => {
-            alert(JSON.stringify(error))
-            reject(error)
-          })
+            alert(JSON.stringify(error));
+            reject(error);
+          });
       }),
       {
-        pending: 'Leaving...',
-        success: 'Logged out successfully 👌',
-        error: 'Encountered error 🤯',
+        pending: "Leaving...",
+        success: "Logged out successfully 👌",
+        error: "Encountered error 🤯",
       }
-    )
-  }
+    );
+  };
 
   const handleCreateGroup = async () => {
     await toast.promise(
       new Promise(async (resolve, reject) => {
-        await createNewGroup(`guid_${gid}`, 'game.title')
+        await createNewGroup(`guid_${gid}`, "game.title")
           .then((group) => {
-            setGlobalState('group', group)
-            resolve(group)
-            window.location.reload()
+            setGlobalState("group", group);
+            resolve(group);
+            window.location.reload();
           })
           .catch((error) => {
-            alert(JSON.stringify(error))
-            reject(error)
-          })
+            alert(JSON.stringify(error));
+            reject(error);
+          });
       }),
       {
-        pending: 'Creating group...',
-        success: 'Group created successfully 👌',
-        error: 'Encountered error 🤯',
+        pending: "Creating group...",
+        success: "Group created successfully 👌",
+        error: "Encountered error 🤯",
       }
-    )
-  }
+    );
+  };
 
   const handleJoinGroup = async () => {
     await toast.promise(
       new Promise(async (resolve, reject) => {
         await joinGroup(`guid_${gid}`)
           .then((group) => {
-            setGlobalState('group', group)
-            resolve()
-            window.location.reload()
+            setGlobalState("group", group);
+            resolve();
+            window.location.reload();
           })
           .catch((error) => {
-            alert(JSON.stringify(error))
-            reject(error)
-          })
+            alert(JSON.stringify(error));
+            reject(error);
+          });
       }),
       {
-        pending: 'Joining group...',
-        success: 'Group joined successfully 👌',
-        error: 'Encountered error 🤯',
+        pending: "Joining group...",
+        success: "Group joined successfully 👌",
+        error: "Encountered error 🤯",
       }
-    )
-  }
+    );
+  };
 
   return (
     <Menu className="relative" as="div">
@@ -175,7 +186,7 @@ const ChatButton = ({ gid }) => {
               )}
             </Menu.Item>
           </>
-        ) : !group && currentUser.uid.toLowerCase() == game.owner ? (
+        ) : !group && currentUser?.uid.toLowerCase() == game.owner ? (
           <>
             <Menu.Item>
               {({ active }) => (
@@ -191,7 +202,9 @@ const ChatButton = ({ gid }) => {
               )}
             </Menu.Item>
           </>
-        ) : !group?.hasJoined && currentUser ? (
+        ) : group &&
+          !group?.hasJoined &&
+          currentUser.uid.toLowerCase() != game.owner ? (
           <>
             <Menu.Item>
               {({ active }) => (
@@ -209,19 +222,21 @@ const ChatButton = ({ gid }) => {
           </>
         ) : (
           <>
-            <Menu.Item>
-              {({ active }) => (
-                <button
-                  className={`flex justify-start items-center space-x-1 ${
-                    active ? "bg-gray-200 text-black" : "text-gray-900"
-                  } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                  onClick={() => setGlobalState("chatModal", "scale-100")}
-                >
-                  <FiUsers size={17} />
-                  <span>Recent Chats</span>
-                </button>
-              )}
-            </Menu.Item>
+            {group && group?.hasJoined && (
+              <Menu.Item>
+                {({ active }) => (
+                  <button
+                    className={`flex justify-start items-center space-x-1 ${
+                      active ? "bg-gray-200 text-black" : "text-gray-900"
+                    } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                    onClick={() => setGlobalState("chatModal", "scale-100")}
+                  >
+                    <FiUsers size={17} />
+                    <span>Recent Chats</span>
+                  </button>
+                )}
+              </Menu.Item>
+            )}
             <Menu.Item>
               {({ active }) => (
                 <button
@@ -240,6 +255,6 @@ const ChatButton = ({ gid }) => {
       </Menu.Items>
     </Menu>
   );
-}
+};
 
-export default ChatButton
+export default ChatButton;

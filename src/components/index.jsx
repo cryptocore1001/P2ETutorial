@@ -7,6 +7,7 @@ import InvitationList from './InvitationList'
 import Chat from './Chat'
 import GameList from './GameList'
 import InviteModal from './InviteModal'
+import useErrorBoundary from './useErrorBoundary'
 
 export {
   Header,
@@ -18,4 +19,5 @@ export {
   Chat,
   GameList,
   InviteModal,
-}
+  useErrorBoundary,
+};
