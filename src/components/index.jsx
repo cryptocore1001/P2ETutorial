@@ -18,4 +18,4 @@ export {
   Chat,
   GameList,
   InviteModal,
-}
+};

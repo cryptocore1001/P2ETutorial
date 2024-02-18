@@ -7,11 +7,11 @@ import { getGroup } from '../services/chat'
 import GameResult from '../components/GameResult'
 
 const GamePlay = () => {
-  const { id } = useParams()
-  const [game] = useGlobalState('game')
-  const [scores] = useGlobalState('scores')
-  const [connectedAccount] = useGlobalState('connectedAccount')
-  const [loaded, setLoaded] = useState(false)
+  const { id } = useParams();
+  const [game] = useGlobalState("game");
+  const [scores] = useGlobalState("scores");
+  const [connectedAccount] = useGlobalState("connectedAccount");
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -22,8 +22,8 @@ const GamePlay = () => {
       setGlobalState('group', GROUP)
     }
 
-    fetchData()
-  }, [id])
+    fetchData();
+  }, [id]);
 
   return (
     loaded && (
@@ -39,7 +39,7 @@ const GamePlay = () => {
         <Chat gid={id} />
       </>
     )
-  )
+  );
 }
 
 export default GamePlay
