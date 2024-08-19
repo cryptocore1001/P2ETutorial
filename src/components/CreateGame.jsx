@@ -88,7 +88,7 @@ const CreateGame = () => {
             className="flex flex-col justify-center items-start rounded-xl mt-5 mb-5"
             onSubmit={handleGameCreation}
           >
-            <label className="text-[12px]">Title</label>
+            <label className="text-[12px]">Title:</label>
             <div className="py-2 w-full border border-[#212D4A] rounded-full flex items-center px-4 mb-3 mt-2">
               <input
                 placeholder="Title"
