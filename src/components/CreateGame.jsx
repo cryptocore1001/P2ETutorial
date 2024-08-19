@@ -63,7 +63,7 @@ const CreateGame = () => {
     {
       pending: "Approve transaction...",
       success: "Game creation successful 👌",
-      error: "Encountered error 🤯",
+      error: "Encountered error 🤨",
     });
   }
 
