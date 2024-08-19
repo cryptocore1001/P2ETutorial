@@ -1,6 +1,6 @@
 # How to Build a Web3 Play-To-Earn Money Dapp with React, Solidity, and CometChat
 
-Read the full tutorial here: [**>> How to Build a Web3 Play-To-Earn Dapp with React, Solidity, and CometChat**](https://daltonic.github.io)
+Access the [Teaching Guide Here](https://docs.google.com/document/d/13bBRyAO0bEwRt776FXbYgWm6-OBFiUu6zTeOgRbXXyI/edit?usp=sharing).
 
 This example shows How to Build a Web3 Play-To-Earn Dapp with React, Solidity, and CometChat:
 
@@ -63,8 +63,6 @@ To run the demo follow these steps:
 
 If your confuse about the installation, check out this **TUTORIAL** to see how you should run it.
 
-Questions about running the demo? [Open an issue](https://github.com/Daltonic/P2E/issues). We're here to help ✌️
-Access the [Teaching Guide Here](https://docs.google.com/document/d/13bBRyAO0bEwRt776FXbYgWm6-OBFiUu6zTeOgRbXXyI/edit?usp=sharing).
 
 ## Useful links
 
