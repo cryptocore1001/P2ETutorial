@@ -11,7 +11,7 @@ const Hero = () => {
           Meets Fortune!
         </h2>
         <p className="text-center my-4 ">
-          Get Ready to Unleash Your Inner Hero and Make Gaming Pay!
+        Get Ready To Unleash Your Inner Hero And Make Gaming Pay!
         </p>
         <div className="flex space-x-3 my-3">
           <button
